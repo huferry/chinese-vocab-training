@@ -31,6 +31,9 @@ export default function Banner() {
           <Link to="/flashcard" className={isActive('/flashcard')} onClick={closeMenu}>
             Flash Card
           </Link>
+          <Link to="/quiz" className={isActive('/quiz')} onClick={closeMenu}>
+            Quiz
+          </Link>
           <Link to="/dictionary" className={isActive('/dictionary')} onClick={closeMenu}>
             Dictionary
           </Link>
