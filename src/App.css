@@ -559,3 +559,143 @@ body {
 
 .quiz-review-item.correct .review-badge { color: var(--success); }
 .quiz-review-item.incorrect .review-badge { color: var(--danger); }
+
+/* ── Word Filter ── */
+.wf-page {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.wf-box {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.wf-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.wf-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.wf-section-title {
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+}
+
+.wf-toggles {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.wf-link {
+  background: none;
+  border: none;
+  color: var(--accent-hover);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.wf-link:hover { text-decoration: underline; }
+
+.wf-sep { color: var(--border); font-size: 0.8rem; }
+
+.wf-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.wf-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.wf-chip input[type="checkbox"] { display: none; }
+
+.wf-chip.checked {
+  border-color: var(--accent);
+  background: var(--accent-light);
+  color: var(--text);
+}
+
+.wf-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.wf-count {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* ── Page header row (title + back link) ── */
+.page-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 680px;
+  margin-bottom: 0.25rem;
+}
+
+.wf-back-btn {
+  background: none;
+  border: none;
+  color: var(--accent-hover);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.wf-back-btn:hover { text-decoration: underline; }
+
+/* ── Quiz review actions row ── */
+.quiz-review-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.quiz-btn-secondary {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.quiz-btn-secondary:hover {
+  background: var(--bg-surface);
+  border-color: var(--accent);
+}
