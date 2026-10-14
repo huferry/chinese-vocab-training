@@ -23,9 +23,29 @@ const pool = new Pool({
 app.get('/api/words', async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT id, hanzi, pinyin, level, meaning, explanation, source FROM dictionary ORDER BY level, hanzi'
+      'SELECT id, hanzi, pinyin, level, meaning, explanation, source, confidence FROM dictionary ORDER BY level, hanzi'
     );
     res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
+app.patch('/api/words/:id/confidence', async (req, res) => {
+  const { id } = req.params;
+  const { confident } = req.body; // true = green check, false = red cross
+  try {
+    const { rows } = await pool.query('SELECT confidence FROM dictionary WHERE id = $1', [id]);
+    if (!rows.length) return res.status(404).json({ error: 'Word not found' });
+
+    const current = rows[0].confidence ?? 1.0;
+    const updated = confident
+      ? Math.max(0.1, current * 0.5)   // green: halve weight, min 0.1
+      : Math.min(20.0, current * 2.0); // red: double weight, max 20
+
+    await pool.query('UPDATE dictionary SET confidence = $1 WHERE id = $2', [updated, id]);
+    res.json({ id: parseInt(id), confidence: updated });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Database error' });

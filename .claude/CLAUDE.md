@@ -30,6 +30,7 @@ The banner will contain links, which will turn into hamburger menu.
 The main area is blank.
 The links are:
 - Flash Card
+- Quiz
 - Dictionary
 
 ### Page: Flash Card
@@ -41,6 +42,15 @@ Under the character is a toggle button, when toggled more information will be sh
 - explanation of the word
 
 There under there's a 'next' button to show the next 3 randomized characters/words.
+
+### Page: Quiz
+In the middle of the page, a word will be shown.
+Under it there are 4 choices of pinyin, and 4 choices of meaning (side by side).
+The user has to choose the pinyin and meaning.
+Under it there's a submit button. When clicked, it will reveal the answers.
+The user has to click 'Next' button to go further.
+Repeat this until the user get 10 questions (or when the dictionary contain less than 10, then until all words are questioned).
+After 10 questions, make a review, which questions are good, which aren't.
 
 ### Page: Dictionary
 This will be a table of all words in the dictionary. 

@@ -699,3 +699,61 @@ body {
   background: var(--bg-surface);
   border-color: var(--accent);
 }
+
+/* ── Flash Card rating buttons ── */
+.card {
+  position: relative;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.card-exit {
+  opacity: 0;
+  transform: scale(0.92);
+  pointer-events: none;
+}
+
+.card-top-actions {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  display: flex;
+  gap: 0.35rem;
+}
+
+.card-rate-btn {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: none;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s, opacity 0.1s;
+  opacity: 0.7;
+}
+
+.card-rate-btn:hover {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+.card-rate-yes {
+  background: rgba(76, 175, 80, 0.2);
+  color: var(--success);
+}
+
+.card-rate-yes:hover {
+  background: rgba(76, 175, 80, 0.35);
+}
+
+.card-rate-no {
+  background: rgba(201, 64, 64, 0.2);
+  color: var(--danger);
+}
+
+.card-rate-no:hover {
+  background: rgba(201, 64, 64, 0.35);
+}
