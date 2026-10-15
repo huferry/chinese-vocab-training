@@ -106,6 +106,13 @@ export default function Quiz() {
   function handleSubmit() {
     if (!selectedPinyin || !selectedMeaning) return;
     setSubmitted(true);
+
+    const correct = selectedPinyin === word.pinyin && selectedMeaning === word.meaning;
+    fetch(`/api/words/${word.id}/confidence`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ confident: correct }),
+    }).catch(() => {});
   }
 
   function handleNext() {
