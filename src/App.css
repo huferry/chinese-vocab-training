@@ -757,3 +757,11 @@ body {
 .card-rate-no:hover {
   background: rgba(201, 64, 64, 0.35);
 }
+
+.card-placeholder {
+  background: transparent;
+  border: 2px dashed var(--border);
+  opacity: 0.3;
+  pointer-events: none;
+  min-height: 160px;
+}
