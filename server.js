@@ -2,7 +2,9 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import pg from 'pg';
+import multer from 'multer';
 import { autofillWord } from './autofill.js';
+import { extractWordsFromFile } from './importWords.js';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
@@ -12,6 +14,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 20 * 1024 * 1024 } });
 
 const pool = new Pool({
   host: process.env.DB_HOST,
@@ -61,6 +65,39 @@ app.post('/api/words', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Database error' });
+  }
+});
+
+app.post('/api/import', upload.single('file'), async (req, res) => {
+  const { source } = req.body;
+  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+  if (!source)   return res.status(400).json({ error: 'source is required' });
+
+  try {
+    const words = await extractWordsFromFile(req.file.buffer, req.file.mimetype);
+
+    // Fetch existing hanzi to deduplicate
+    const { rows: existing } = await pool.query('SELECT hanzi FROM dictionary');
+    const existingSet = new Set(existing.map(r => r.hanzi));
+
+    const toAdd   = words.filter(w => !existingSet.has(w.hanzi));
+    const skipped = words.filter(w =>  existingSet.has(w.hanzi)).map(w => w.hanzi);
+
+    const added = [];
+    for (const w of toAdd) {
+      const { rows } = await pool.query(
+        `INSERT INTO dictionary (hanzi, pinyin, level, meaning, explanation, source)
+         VALUES ($1, $2, $3, $4, $5, $6)
+         RETURNING id, hanzi, pinyin, level, meaning, explanation, source, confidence`,
+        [w.hanzi, w.pinyin, w.level, w.meaning, w.explanation, source]
+      );
+      added.push(rows[0]);
+    }
+
+    res.json({ added, skipped });
+  } catch (err) {
+    console.error('Import error:', err.message);
+    res.status(500).json({ error: err.message || 'Import failed' });
   }
 });
 

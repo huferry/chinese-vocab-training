@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { autofillWord } from '../utils/autofill.js';
+import { importFromFile } from '../utils/importWords.js';
 
 const COLUMNS = [
   { key: 'hanzi',       label: 'Hanzi' },
@@ -29,6 +30,15 @@ export default function Dictionary() {
   const [formError, setFormError]   = useState(null);
   const dialogRef = useRef(null);
 
+  // Import dialog state
+  const [importOpen, setImportOpen]       = useState(false);
+  const [importFile, setImportFile]       = useState(null);
+  const [importSource, setImportSource]   = useState('');
+  const [importStage, setImportStage]     = useState('form'); // 'form' | 'loading' | 'results'
+  const [importResult, setImportResult]   = useState(null);  // { added, skipped }
+  const [importError, setImportError]     = useState(null);
+  const importDialogRef = useRef(null);
+
   useEffect(() => {
     fetch('/api/words')
       .then(r => { if (!r.ok) throw new Error('Failed to load words'); return r.json(); })
@@ -36,7 +46,7 @@ export default function Dictionary() {
       .catch(err => { setError(err.message); setLoading(false); });
   }, []);
 
-  // Close on backdrop click
+  // Close add-word dialog on backdrop click
   useEffect(() => {
     function onMouseDown(e) {
       if (dialogRef.current && !dialogRef.current.contains(e.target)) {
@@ -46,6 +56,17 @@ export default function Dictionary() {
     if (dialogOpen) document.addEventListener('mousedown', onMouseDown);
     return () => document.removeEventListener('mousedown', onMouseDown);
   }, [dialogOpen]);
+
+  // Close import dialog on backdrop click (only in form stage)
+  useEffect(() => {
+    function onMouseDown(e) {
+      if (importDialogRef.current && !importDialogRef.current.contains(e.target) && importStage === 'form') {
+        closeImport();
+      }
+    }
+    if (importOpen) document.addEventListener('mousedown', onMouseDown);
+    return () => document.removeEventListener('mousedown', onMouseDown);
+  }, [importOpen, importStage]);
 
   function openDialog() {
     setForm(EMPTY_FORM);
@@ -110,6 +131,35 @@ export default function Dictionary() {
     }
   }
 
+  function openImport() {
+    setImportFile(null);
+    setImportSource('');
+    setImportStage('form');
+    setImportResult(null);
+    setImportError(null);
+    setImportOpen(true);
+  }
+
+  function closeImport() {
+    setImportOpen(false);
+  }
+
+  async function handleImportSubmit() {
+    if (!importFile) { setImportError('Select a file first.'); return; }
+    if (!importSource.trim()) { setImportError('Source is required.'); return; }
+    setImportStage('loading');
+    setImportError(null);
+    try {
+      const result = await importFromFile(importFile, importSource.trim());
+      setImportResult(result);
+      setWords(prev => [...prev, ...result.added]);
+      setImportStage('results');
+    } catch (err) {
+      setImportError(err.message);
+      setImportStage('form');
+    }
+  }
+
   function handleSort(key) {
     if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
     else { setSortKey(key); setSortDir('asc'); }
@@ -136,7 +186,15 @@ export default function Dictionary() {
     <div className="dictionary-page">
       <div className="page-header-row">
         <h2>Dictionary <span className="dict-count">({words.length})</span></h2>
-        <button className="dict-add-btn" onClick={openDialog} title="Add word">＋</button>
+        <div className="dict-header-btns">
+          <button className="dict-add-btn" onClick={openImport} title="Import from document or image">
+            <svg viewBox="0 0 22 22" fill="currentColor" width="16" height="16" style={{marginRight:'2px',verticalAlign:'middle'}}>
+              <path d="M5 3a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V8.414A2 2 0 0018.414 7L15 3.586A2 2 0 0013.586 3H5z" opacity=".45"/>
+              <path d="M11 8a1 1 0 011 1v2h2a1 1 0 110 2h-2v2a1 1 0 11-2 0v-2H8a1 1 0 110-2h2V9a1 1 0 011-1z"/>
+            </svg>
+          </button>
+          <button className="dict-add-btn" onClick={openDialog} title="Add word">＋</button>
+        </div>
       </div>
 
       <input
@@ -242,6 +300,96 @@ export default function Dictionary() {
                 {saving ? 'Saving…' : 'OK'}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {importOpen && (
+        <div className="dialog-overlay">
+          <div className="dialog dialog-import" ref={importDialogRef}>
+            {importStage === 'form' && (
+              <>
+                <h3 className="dialog-title">Import from Document / Image</h3>
+                <div className="dialog-fields">
+                  <label className="dialog-label">
+                    File
+                    <input
+                      type="file"
+                      className="dialog-input"
+                      accept="image/*,application/pdf"
+                      onChange={e => setImportFile(e.target.files[0] ?? null)}
+                    />
+                  </label>
+                  <label className="dialog-label">
+                    Source
+                    <input
+                      className="dialog-input"
+                      value={importSource}
+                      onChange={e => setImportSource(e.target.value)}
+                      list="import-source-options"
+                      autoComplete="off"
+                      placeholder="e.g. hsk3-ch5"
+                    />
+                    <datalist id="import-source-options">
+                      {[...new Set(words.map(w => w.source).filter(Boolean))].sort().map(s => (
+                        <option key={s} value={s} />
+                      ))}
+                    </datalist>
+                  </label>
+                </div>
+                {importError && <p className="dialog-error">{importError}</p>}
+                <div className="dialog-actions">
+                  <button className="dialog-btn dialog-cancel" onClick={closeImport}>Cancel</button>
+                  <button className="dialog-btn dialog-ok" onClick={handleImportSubmit}>Import</button>
+                </div>
+              </>
+            )}
+
+            {importStage === 'loading' && (
+              <div className="import-loading">
+                <p>Extracting words with AI…</p>
+                <div className="import-spinner" />
+              </div>
+            )}
+
+            {importStage === 'results' && importResult && (
+              <>
+                <h3 className="dialog-title">Import Complete</h3>
+                <p className="import-summary">
+                  Added <strong>{importResult.added.length}</strong> word{importResult.added.length !== 1 ? 's' : ''}
+                  {importResult.skipped.length > 0 && `, skipped ${importResult.skipped.length} duplicate${importResult.skipped.length !== 1 ? 's' : ''}`}.
+                </p>
+                {importResult.added.length > 0 && (
+                  <div className="import-results-table-wrap">
+                    <table className="dict-table import-results-table">
+                      <thead>
+                        <tr>
+                          <th>Hanzi</th><th>Pinyin</th><th>Level</th><th>Meaning</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {importResult.added.map(w => (
+                          <tr key={w.id}>
+                            <td className="td-hanzi">{w.hanzi}</td>
+                            <td className="td-pinyin">{w.pinyin}</td>
+                            <td className="td-level">{w.level}</td>
+                            <td>{w.meaning}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+                {importResult.skipped.length > 0 && (
+                  <p className="import-skipped">
+                    Skipped (already in dictionary): {importResult.skipped.join('、')}
+                  </p>
+                )}
+                <div className="dialog-actions">
+                  <button className="dialog-btn dialog-ok" onClick={closeImport}>Close</button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
