@@ -226,6 +226,18 @@ export default function PinyinGame() {
         </div>
       </div>
 
+      {submitted && (
+        <div className={`pinyin-reveal ${selectedTone === word.pinyin ? 'pinyin-reveal-correct' : 'pinyin-reveal-wrong'}`}>
+          {selectedTone !== word.pinyin && (
+            <div className="pinyin-reveal-answer">
+              <span className="pinyin-reveal-label">Correct answer:</span>
+              <span className="pinyin-reveal-pinyin">{word.pinyin}</span>
+            </div>
+          )}
+          <div className="pinyin-reveal-meaning">{word.meaning}</div>
+        </div>
+      )}
+
       <div className="quiz-actions">
         {!submitted ? (
           <button

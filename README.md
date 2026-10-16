@@ -72,6 +72,10 @@ CREATE TABLE IF NOT EXISTS dictionary (
 
 ## Release Notes
 
+### v1.1.1 (2026-10-16)
+
+- Pinyin game: reveal correct answer and meaning after a wrong tone selection
+
 ### v1.1.0 (2026-10-16)
 
 - New game: Pinyin — select the correct sound and tone for a given hanzi
