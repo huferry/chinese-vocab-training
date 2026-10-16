@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
+import { autofillWord } from '../utils/autofill.js';
 
 const COLUMNS = [
   { key: 'hanzi',       label: 'Hanzi' },
@@ -24,6 +25,7 @@ export default function Dictionary() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm]             = useState(EMPTY_FORM);
   const [saving, setSaving]         = useState(false);
+  const [filling, setFilling]       = useState(false);
   const [formError, setFormError]   = useState(null);
   const dialogRef = useRef(null);
 
@@ -58,6 +60,29 @@ export default function Dictionary() {
 
   function handleField(e) {
     setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+  }
+
+  async function handleAutofill() {
+    if (!form.hanzi.trim()) {
+      setFormError('Enter a hanzi first.');
+      return;
+    }
+    setFilling(true);
+    setFormError(null);
+    try {
+      const data = await autofillWord(form.hanzi.trim());
+      setForm(f => ({
+        ...f,
+        pinyin:      data.pinyin,
+        level:       String(data.level),
+        meaning:     data.meaning,
+        explanation: data.explanation,
+      }));
+    } catch (err) {
+      setFormError(err.message);
+    } finally {
+      setFilling(false);
+    }
   }
 
   async function handleOk() {
@@ -159,7 +184,18 @@ export default function Dictionary() {
             <div className="dialog-fields">
               <label className="dialog-label">
                 Hanzi
-                <input className="dialog-input" name="hanzi" value={form.hanzi} onChange={handleField} autoFocus />
+                <div className="dialog-input-row">
+                  <input className="dialog-input" name="hanzi" value={form.hanzi} onChange={handleField} autoFocus />
+                  <button
+                    type="button"
+                    className="autofill-btn"
+                    title="Autofill with AI"
+                    onClick={handleAutofill}
+                    disabled={filling || saving}
+                  >
+                    {filling ? '…' : '✨'}
+                  </button>
+                </div>
               </label>
               <label className="dialog-label">
                 Pinyin

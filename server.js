@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import pg from 'pg';
+import { autofillWord } from './autofill.js';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
@@ -29,6 +30,18 @@ app.get('/api/words', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Database error' });
+  }
+});
+
+app.post('/api/autofill', async (req, res) => {
+  const { hanzi } = req.body;
+  if (!hanzi) return res.status(400).json({ error: 'hanzi is required' });
+  try {
+    const result = await autofillWord(hanzi);
+    res.json(result);
+  } catch (err) {
+    console.error('Autofill error:', err.message);
+    res.status(500).json({ error: 'Failed to autofill word' });
   }
 });
 

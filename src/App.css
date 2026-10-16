@@ -907,3 +907,40 @@ body {
 .dialog-ok:hover:not(:disabled) {
   background: var(--accent-hover);
 }
+
+/* ── Autofill button ── */
+.dialog-input-row {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.dialog-input-row .dialog-input {
+  flex: 1;
+}
+
+.autofill-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 1rem;
+  width: 2.2rem;
+  height: 2.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.autofill-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.autofill-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
