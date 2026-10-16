@@ -117,6 +117,10 @@ body {
 }
 
 @media (max-width: 767px) {
+  .mobile-hidden {
+    display: none;
+  }
+
   .banner-hamburger {
     display: block;
   }

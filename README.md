@@ -72,6 +72,10 @@ CREATE TABLE IF NOT EXISTS dictionary (
 
 ## Release Notes
 
+### v1.0.1 (2026-10-16)
+
+- Dictionary: on mobile, show only Hanzi, Pinyin, and Meaning columns
+
 ### v1.0.0 (2026-10-16)
 
 - Initial release

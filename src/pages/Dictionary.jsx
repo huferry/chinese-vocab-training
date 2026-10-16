@@ -5,10 +5,10 @@ import { importFromFile } from '../utils/importWords.js';
 const COLUMNS = [
   { key: 'hanzi',       label: 'Hanzi' },
   { key: 'pinyin',      label: 'Pinyin' },
-  { key: 'level',       label: 'Level' },
+  { key: 'level',       label: 'Level',        mobileHidden: true },
   { key: 'meaning',     label: 'Meaning' },
-  { key: 'explanation', label: 'Explanation' },
-  { key: 'source',      label: 'Source' },
+  { key: 'explanation', label: 'Explanation',  mobileHidden: true },
+  { key: 'source',      label: 'Source',       mobileHidden: true },
 ];
 
 const HSK_LEVELS = [1, 2, 3, 4, 5, 6];
@@ -210,7 +210,7 @@ export default function Dictionary() {
           <thead>
             <tr>
               {COLUMNS.map(col => (
-                <th key={col.key} className={sortKey === col.key ? 'sorted' : ''} onClick={() => handleSort(col.key)}>
+                <th key={col.key} className={[sortKey === col.key ? 'sorted' : '', col.mobileHidden ? 'mobile-hidden' : ''].filter(Boolean).join(' ')} onClick={() => handleSort(col.key)}>
                   {col.label}
                   <span className="sort-icon">{sortKey === col.key ? (sortDir === 'asc' ? '▲' : '▼') : '⇅'}</span>
                 </th>
@@ -224,10 +224,10 @@ export default function Dictionary() {
               <tr key={w.id}>
                 <td className="td-hanzi">{w.hanzi}</td>
                 <td className="td-pinyin">{w.pinyin}</td>
-                <td className="td-level">{w.level}</td>
+                <td className="td-level mobile-hidden">{w.level}</td>
                 <td>{w.meaning}</td>
-                <td>{w.explanation}</td>
-                <td>{w.source}</td>
+                <td className="mobile-hidden">{w.explanation}</td>
+                <td className="mobile-hidden">{w.source}</td>
               </tr>
             ))}
           </tbody>
