@@ -666,8 +666,11 @@ body {
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  max-width: 680px;
   margin-bottom: 0.25rem;
+}
+
+.page-header-row h2 {
+  margin-bottom: 0;
 }
 
 .wf-back-btn {
