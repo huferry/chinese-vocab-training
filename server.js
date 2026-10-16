@@ -32,6 +32,25 @@ app.get('/api/words', async (req, res) => {
   }
 });
 
+app.post('/api/words', async (req, res) => {
+  const { hanzi, pinyin, level, meaning, explanation, source } = req.body;
+  if (!hanzi || !pinyin || !level || !meaning || !explanation || !source) {
+    return res.status(400).json({ error: 'All fields are required' });
+  }
+  try {
+    const result = await pool.query(
+      `INSERT INTO dictionary (hanzi, pinyin, level, meaning, explanation, source)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING id, hanzi, pinyin, level, meaning, explanation, source, confidence`,
+      [hanzi, pinyin, parseInt(level), meaning, explanation, source]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
 app.patch('/api/words/:id/confidence', async (req, res) => {
   const { id } = req.params;
   const { confident } = req.body; // true = green check, false = red cross
