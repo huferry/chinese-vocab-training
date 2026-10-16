@@ -4,6 +4,7 @@ import Home from './pages/Home.jsx';
 import FlashCard from './pages/FlashCard.jsx';
 import Dictionary from './pages/Dictionary.jsx';
 import Quiz from './pages/Quiz.jsx';
+import PinyinGame from './pages/Pinyin.jsx';
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/flashcard" element={<FlashCard />} />
+            <Route path="/pinyin" element={<PinyinGame />} />
             <Route path="/quiz" element={<Quiz />} />
             <Route path="/dictionary" element={<Dictionary />} />
           </Routes>
