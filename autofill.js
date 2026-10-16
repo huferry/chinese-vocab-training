@@ -22,7 +22,8 @@ Chinese word: ${hanzi}`,
     ],
   });
 
-  const text = message.content[0].text.trim();
+  const raw  = message.content[0].text.trim();
+  const text = raw.replace(/^```[a-z]*\n?/i, '').replace(/```$/,'').trim();
   const data = JSON.parse(text);
 
   // Validate shape
