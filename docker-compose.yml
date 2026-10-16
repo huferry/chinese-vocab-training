@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      DB_HOST: ${DB_HOST:-kingston}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME:-chinese_vocab}
+      DB_USER: ${DB_USER:-chinese-test}
+      DB_PASSWORD: ${DB_PASSWORD:-chinese-test}
+      CLAUDE_API_KEY: ${CLAUDE_API_KEY}
+    restart: unless-stopped

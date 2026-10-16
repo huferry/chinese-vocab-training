@@ -1,0 +1,79 @@
+# Chinese Vocabulary Training
+
+A web app to study Chinese characters and vocabulary using flash cards and quizzes. Words are stored in a PostgreSQL database with HSK levels, pinyin, meanings, and explanations.
+
+## Prerequisites
+
+- Docker & Docker Compose
+- A running PostgreSQL instance (default: host `kingston`, port `5432`)
+- An Anthropic API key (for AI autofill and document import)
+
+## Running with Docker Compose
+
+1. Copy the example env file and fill in your values:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   `.env`:
+   ```
+   DB_HOST=kingston
+   DB_PORT=5432
+   DB_NAME=chinese_vocab
+   DB_USER=chinese-test
+   DB_PASSWORD=chinese-test
+   CLAUDE_API_KEY=sk-ant-...
+   ```
+
+2. Build and start:
+
+   ```bash
+   docker compose up --build
+   ```
+
+3. Open [http://localhost:3001](http://localhost:3001).
+
+To run in the background:
+
+```bash
+docker compose up --build -d
+docker compose logs -f   # tail logs
+docker compose down      # stop
+```
+
+## Running with Docker directly
+
+```bash
+docker build -t chinese-vocab .
+
+docker run -p 3001:3001 \
+  --env-file .env \
+  chinese-vocab
+```
+
+## Database setup
+
+The app expects a `dictionary` table in your PostgreSQL database:
+
+```sql
+CREATE TABLE IF NOT EXISTS dictionary (
+  id          SERIAL PRIMARY KEY,
+  hanzi       TEXT NOT NULL UNIQUE,
+  pinyin      TEXT NOT NULL,
+  level       INTEGER NOT NULL,
+  meaning     TEXT NOT NULL,
+  explanation TEXT NOT NULL,
+  source      TEXT NOT NULL,
+  update_time TIMESTAMPTZ NOT NULL DEFAULT now(),
+  confidence  FLOAT NOT NULL DEFAULT 1.0
+);
+```
+
+## Local development (without Docker)
+
+```bash
+npm install
+npm run dev      # Vite dev server on :5173, proxies /api → :3001
+node server.js   # Express API on :3001
+```
