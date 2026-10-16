@@ -182,7 +182,19 @@ export default function Dictionary() {
               </label>
               <label className="dialog-label">
                 Source
-                <input className="dialog-input" name="source" value={form.source} onChange={handleField} />
+                <input
+                  className="dialog-input"
+                  name="source"
+                  value={form.source}
+                  onChange={handleField}
+                  list="source-options"
+                  autoComplete="off"
+                />
+                <datalist id="source-options">
+                  {[...new Set(words.map(w => w.source).filter(Boolean))].sort().map(s => (
+                    <option key={s} value={s} />
+                  ))}
+                </datalist>
               </label>
             </div>
 
