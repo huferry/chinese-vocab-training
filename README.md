@@ -70,6 +70,17 @@ CREATE TABLE IF NOT EXISTS dictionary (
 );
 ```
 
+## Release Notes
+
+### v1.0.0 (2026-10-16)
+
+- Initial release
+- Flash Card training with confidence-based weighted selection
+- Quiz with 10-question sessions and results review
+- Dictionary with sortable/filterable table, word management, AI autofill, and document/image import
+- Level and source filter screen before Flash Card and Quiz
+- Docker & Docker Compose support
+
 ## Local development (without Docker)
 
 ```bash
