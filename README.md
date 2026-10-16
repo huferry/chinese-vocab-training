@@ -72,6 +72,11 @@ CREATE TABLE IF NOT EXISTS dictionary (
 
 ## Release Notes
 
+### v1.1.2 (2026-10-16)
+
+- Pinyin game: fix correct tone sometimes missing from choices
+- Pinyin game: scroll to top on Next
+
 ### v1.1.1 (2026-10-16)
 
 - Pinyin game: reveal correct answer and meaning after a wrong tone selection

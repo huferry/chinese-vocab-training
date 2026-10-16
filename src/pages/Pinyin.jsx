@@ -18,12 +18,15 @@ function shuffle(arr) {
   return a;
 }
 
-// Build tone options for a given base, given the correct tones of the answer word.
-// Returns 4 toned strings (shuffled), one of which is the correct toned pinyin.
-function buildToneOptions(base, correctTones) {
-  const correctToned = applyTones(base, correctTones);
+// Build tone options for the correct sound base.
+// Uses word.pinyin directly as the correct option to avoid any round-trip
+// mismatch from strip → apply reconstruction.
+function buildToneOptions(wordPinyin, base, correctTones) {
   const wrongSets = generateWrongToneSets(correctTones, 3);
-  return shuffle([correctToned, ...wrongSets.map(t => applyTones(base, t))]);
+  const wrongOptions = wrongSets
+    .map(t => applyTones(base, t))
+    .filter(s => s !== wordPinyin); // guard against accidental collision
+  return shuffle([wordPinyin, ...wrongOptions.slice(0, 3)]);
 }
 
 // Build tone options for a wrong sound base (all 4 are wrong).
@@ -47,7 +50,7 @@ function buildQuestion(word, pool) {
   const toneOptionsMap = {};
   for (const base of soundChoices) {
     toneOptionsMap[base] = base === correctBase
-      ? buildToneOptions(base, correctTones)
+      ? buildToneOptions(word.pinyin, base, correctTones)
       : buildWrongBaseToneOptions(base, syllableCount);
   }
 
@@ -123,6 +126,7 @@ export default function PinyinGame() {
     const { word } = questions[index];
     const correct = selectedSound === stripTones(word.pinyin) && selectedTone === word.pinyin;
     const newResults = [...results, { word, correct }];
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     if (index + 1 >= questions.length) {
       setResults(newResults);
       setDone(true);
