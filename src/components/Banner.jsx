@@ -37,6 +37,9 @@ export default function Banner() {
           <Link to="/quiz" className={isActive('/quiz')} onClick={closeMenu}>
             Quiz
           </Link>
+          <Link to="/sentences" className={isActive('/sentences')} onClick={closeMenu}>
+            Sentences
+          </Link>
           <Link to="/dictionary" className={isActive('/dictionary')} onClick={closeMenu}>
             Dictionary
           </Link>

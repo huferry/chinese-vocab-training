@@ -5,6 +5,7 @@ import pg from 'pg';
 import multer from 'multer';
 import { autofillWord } from './autofill.js';
 import { extractWordsFromFile } from './importWords.js';
+import { sentenceChatTurn } from './sentenceChat.js';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
@@ -103,21 +104,33 @@ app.post('/api/import', upload.single('file'), async (req, res) => {
 
 app.patch('/api/words/:id/confidence', async (req, res) => {
   const { id } = req.params;
-  const { confident } = req.body; // true = green check, false = red cross
+  const { confident, factor = 1.0 } = req.body; // factor amplifies the confidence change
   try {
     const { rows } = await pool.query('SELECT confidence FROM dictionary WHERE id = $1', [id]);
     if (!rows.length) return res.status(404).json({ error: 'Word not found' });
 
     const current = rows[0].confidence ?? 1.0;
     const updated = confident
-      ? Math.max(0.1, current * 0.5)   // green: halve weight, min 0.1
-      : Math.min(20.0, current * 2.0); // red: double weight, max 20
+      ? Math.max(0.1, current * (0.5 / factor))  // green: reduce weight (more = stronger)
+      : Math.min(20.0, current * 2.0);            // red: double weight
 
     await pool.query('UPDATE dictionary SET confidence = $1 WHERE id = $2', [updated, id]);
     res.json({ id: parseInt(id), confidence: updated });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Database error' });
+  }
+});
+
+app.post('/api/sentences/chat', async (req, res) => {
+  const { word, messages } = req.body;
+  if (!word?.hanzi) return res.status(400).json({ error: 'word is required' });
+  try {
+    const result = await sentenceChatTurn(word, messages ?? []);
+    res.json(result);
+  } catch (err) {
+    console.error('Sentence chat error:', err.message);
+    res.status(500).json({ error: err.message });
   }
 });
 

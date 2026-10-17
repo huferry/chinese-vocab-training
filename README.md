@@ -72,6 +72,11 @@ CREATE TABLE IF NOT EXISTS dictionary (
 
 ## Release Notes
 
+### v1.2.0 (2026-10-17)
+
+- New game: Sentences — translate AI-generated English sentences to Chinese with Claude as tutor
+- Paste-last-answer button in the sentence input field
+
 ### v1.1.2 (2026-10-16)
 
 - Pinyin game: fix correct tone sometimes missing from choices
