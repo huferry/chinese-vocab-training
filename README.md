@@ -72,6 +72,11 @@ CREATE TABLE IF NOT EXISTS dictionary (
 
 ## Release Notes
 
+### v1.2.1 (2026-10-17)
+
+- Dictionary import: support .txt and .srt files
+- Dictionary import: fix JSON truncation error on large files; cap output at 80 words
+
 ### v1.2.0 (2026-10-17)
 
 - New game: Sentences — translate AI-generated English sentences to Chinese with Claude as tutor

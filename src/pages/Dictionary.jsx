@@ -316,7 +316,7 @@ export default function Dictionary() {
                     <input
                       type="file"
                       className="dialog-input"
-                      accept="image/*,application/pdf"
+                      accept="image/*,application/pdf,text/plain,.txt,.srt"
                       onChange={e => setImportFile(e.target.files[0] ?? null)}
                     />
                   </label>
