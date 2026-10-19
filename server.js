@@ -7,6 +7,7 @@ import { autofillWord } from './autofill.js';
 import { extractWordsFromFile } from './importWords.js';
 import { sentenceChatTurn } from './sentenceChat.js';
 import { fetchBreakdown } from './breakdown.js';
+import { generateStory } from './writingStory.js';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
@@ -173,6 +174,25 @@ app.get('/api/breakdown/:hanzi', async (req, res) => {
   }
 });
 
+app.post('/api/writing/story', async (req, res) => {
+  const { words } = req.body;
+  if (!Array.isArray(words) || words.length === 0) {
+    return res.status(400).json({ error: 'words array is required' });
+  }
+  try {
+    const story = await generateStory(words);
+    await pool.query(
+      `INSERT INTO stories (title, title_pinyin, title_translation, sentences)
+       VALUES ($1, $2, $3, $4)`,
+      [story.title, story.title_pinyin, story.title_translation, JSON.stringify(story.sentences)]
+    );
+    res.json(story);
+  } catch (err) {
+    console.error('Writing story error:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.post('/api/sentences/chat', async (req, res) => {
   const { word, messages } = req.body;
   if (!word?.hanzi) return res.status(400).json({ error: 'word is required' });
@@ -193,6 +213,16 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 const PORT = 3001;
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS stories (
+      id         SERIAL PRIMARY KEY,
+      title      TEXT NOT NULL,
+      title_pinyin      TEXT NOT NULL,
+      title_translation TEXT NOT NULL,
+      sentences  JSONB NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `);
   console.log(`Server running on port ${PORT}`);
 });

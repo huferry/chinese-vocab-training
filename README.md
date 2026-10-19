@@ -72,6 +72,11 @@ CREATE TABLE IF NOT EXISTS dictionary (
 
 ## Release Notes
 
+### v1.6.0 (2026-10-19)
+
+- New game: Writing — Claude generates a short story from filtered vocabulary; hover any character to see the sentence's pinyin and translation; click any character for radical breakdown
+- Stories are saved to the database (`stories` table, auto-created on startup)
+
 ### v1.5.0 (2026-10-19)
 
 - Character breakdown: click any character in Flash Card or Sentences to see radical breakdown, etymology, pinyin, and common words (powered by Claude Sonnet, cached in DB)

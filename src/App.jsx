@@ -6,6 +6,7 @@ import Dictionary from './pages/Dictionary.jsx';
 import Quiz from './pages/Quiz.jsx';
 import PinyinGame from './pages/Pinyin.jsx';
 import Sentences from './pages/Sentences.jsx';
+import Writing from './pages/Writing.jsx';
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
             <Route path="/pinyin" element={<PinyinGame />} />
             <Route path="/quiz" element={<Quiz />} />
             <Route path="/sentences" element={<Sentences />} />
+            <Route path="/writing" element={<Writing />} />
             <Route path="/dictionary" element={<Dictionary />} />
           </Routes>
         </main>

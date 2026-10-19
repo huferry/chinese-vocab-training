@@ -40,6 +40,9 @@ export default function Banner() {
           <Link to="/sentences" className={isActive('/sentences')} onClick={closeMenu}>
             Sentences
           </Link>
+          <Link to="/writing" className={isActive('/writing')} onClick={closeMenu}>
+            Writing
+          </Link>
           <Link to="/dictionary" className={isActive('/dictionary')} onClick={closeMenu}>
             Dictionary
           </Link>
