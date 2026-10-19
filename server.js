@@ -131,13 +131,23 @@ app.patch('/api/words/:id/confidence', async (req, res) => {
   const { id } = req.params;
   const { confident, factor = 1.0 } = req.body; // factor amplifies the confidence change
   try {
-    const { rows } = await pool.query('SELECT confidence FROM dictionary WHERE id = $1', [id]);
+    const { rows } = await pool.query('SELECT hanzi, confidence, play_count FROM dictionary WHERE id = $1', [id]);
     if (!rows.length) return res.status(404).json({ error: 'Word not found' });
 
+    const { hanzi, play_count } = rows[0];
     const current = rows[0].confidence ?? 1.0;
     const updated = confident
-      ? Math.max(0.1, current * (0.5 / factor))  // green: reduce weight (more = stronger)
-      : Math.min(20.0, current * 2.0);            // red: double weight
+      ? Math.min(20.0, current * 2.0 * factor)   // green: raise confidence → appears less
+      : Math.max(0.1, current * 0.5);             // red: lower confidence → appears more
+
+    const weight = (pc) => 1.0 / (pc * Math.pow((play_count ?? 0) + 1, 2));
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(
+        `[weight] ${hanzi} | ${confident ? '✓' : '✗'} | ` +
+        `confidence: ${current.toFixed(3)} → ${updated.toFixed(3)} | ` +
+        `weight: ${weight(current).toFixed(4)} → ${weight(updated).toFixed(4)}`
+      );
+    }
 
     await pool.query('UPDATE dictionary SET confidence = $1 WHERE id = $2', [updated, id]);
     res.json({ id: parseInt(id), confidence: updated });

@@ -72,6 +72,12 @@ CREATE TABLE IF NOT EXISTS dictionary (
 
 ## Release Notes
 
+### v1.4.2 (2026-10-19)
+
+- Word selection: lower confidence now means more likely to appear (was inverted)
+- Word selection: play_count uses pool-relative percentile ranking for stronger influence
+- Dev mode: log weight changes to console on confidence updates
+
 ### v1.4.1 (2026-10-19)
 
 - Move HSK level badge to bottom-right of the Chinese word

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import WordFilter from '../components/WordFilter.jsx';
 import { sentenceChatTurn } from '../utils/sentenceChat.js';
-import { wordWeight } from '../utils/wordSelection.js';
+import { weightedPick, poolWeights } from '../utils/wordSelection.js';
 import { recordPlay } from '../utils/recordPlay.js';
 
 // Render text with **bold** markdown into React elements
@@ -14,23 +14,9 @@ function renderText(text) {
   );
 }
 
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
 
 function pickWord(pool) {
-  const totalWeight = pool.reduce((s, w) => s + wordWeight(w), 0);
-  let r = Math.random() * totalWeight;
-  for (const w of pool) {
-    r -= wordWeight(w);
-    if (r <= 0) return w;
-  }
-  return pool[pool.length - 1];
+  return weightedPick(pool, [], poolWeights(pool));
 }
 
 export default function Sentences() {

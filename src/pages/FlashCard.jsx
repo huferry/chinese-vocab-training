@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import WordFilter from '../components/WordFilter.jsx';
-import { weightedPick } from '../utils/wordSelection.js';
+import { weightedPick, poolWeights } from '../utils/wordSelection.js';
 import { recordPlay } from '../utils/recordPlay.js';
 
 function pickThree(pool) {
+  const weights = poolWeights(pool);
   const slots = [];
   for (let i = 0; i < Math.min(3, pool.length); i++) {
-    const word = weightedPick(pool, slots.map(s => s.word.id));
+    const word = weightedPick(pool, slots.map(s => s.word.id), weights);
     recordPlay(word.id);
     slots.push({ word, revealed: false, exiting: false, gone: false });
   }

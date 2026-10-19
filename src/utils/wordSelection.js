@@ -1,31 +1,44 @@
-// Combined weight: difficulty (confidence) boosted for less-played words.
-// Higher confidence = harder word = more practice needed.
-// Lower play_count = newer/less-seen word = should appear more.
-export function wordWeight(word) {
-  return (word.confidence ?? 1.0) / ((word.play_count ?? 0) + 1);
+// Compute a weight map for the pool.
+// play_count percentile rank (relative to pool) drives priority more than confidence.
+// Low percentile (less played) → high weight. Low confidence (less known) → high weight.
+export function poolWeights(pool) {
+  const sorted = [...pool].sort((a, b) => (a.play_count ?? 0) - (b.play_count ?? 0));
+  const n = sorted.length;
+  const percentileMap = new Map(
+    sorted.map((w, i) => [w.id, n === 1 ? 0.5 : i / (n - 1)])
+  );
+  return new Map(pool.map(w => {
+    const p = percentileMap.get(w.id) ?? 0.5;
+    // p=0 (least played) → playFactor=1.21, p=1 (most played) → playFactor=0.01
+    const playFactor = Math.pow(1.1 - p, 2);
+    return [w.id, playFactor / (w.confidence ?? 1.0)];
+  }));
 }
 
-// Pick one word by weight, optionally excluding some IDs.
-export function weightedPick(pool, excludeIds = []) {
+// Pick one word by weight. Accepts a pre-computed weights map (or computes from candidates).
+export function weightedPick(pool, excludeIds = [], weights) {
   const candidates = excludeIds.length ? pool.filter(w => !excludeIds.includes(w.id)) : pool;
   if (!candidates.length) return pool[0];
-  const totalWeight = candidates.reduce((s, w) => s + wordWeight(w), 0);
-  let r = Math.random() * totalWeight;
-  for (const w of candidates) {
-    r -= wordWeight(w);
-    if (r <= 0) return w;
+  const w = weights ?? poolWeights(candidates);
+  const total = candidates.reduce((s, word) => s + (w.get(word.id) ?? 1), 0);
+  let r = Math.random() * total;
+  for (const word of candidates) {
+    r -= w.get(word.id) ?? 1;
+    if (r <= 0) return word;
   }
   return candidates[candidates.length - 1];
 }
 
 // Pick n distinct words by weight (without replacement).
+// Weights computed once from the full pool so percentile ranks stay stable.
 export function weightedPickN(pool, n) {
+  const weights = poolWeights(pool);
   const result = [];
   const remaining = [...pool];
   for (let i = 0; i < Math.min(n, pool.length); i++) {
-    const w = weightedPick(remaining);
-    result.push(w);
-    remaining.splice(remaining.indexOf(w), 1);
+    const word = weightedPick(remaining, [], weights);
+    result.push(word);
+    remaining.splice(remaining.indexOf(word), 1);
   }
   return result;
 }
