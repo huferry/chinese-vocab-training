@@ -101,7 +101,12 @@ export default function FlashCard() {
                   onClick={() => handleRate(i, false)}
                 >✗</button>
               </div>
-              <div className="card-hanzi">{slot.word.hanzi}</div>
+              <div className="card-hanzi">
+                <span className="hanzi-badge-wrap">
+                  {slot.word.hanzi}
+                  <span className="hsk-badge">HSK {slot.word.level}</span>
+                </span>
+              </div>
               {slot.revealed && (
                 <div className="card-reveal">
                   {slot.word.pinyin    && <div className="card-pinyin">{slot.word.pinyin}</div>}

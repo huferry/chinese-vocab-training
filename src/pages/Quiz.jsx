@@ -140,7 +140,12 @@ export default function Quiz() {
         <button className="wf-back-btn" onClick={goBackToFilter}>⟵ Change filters</button>
       </div>
 
-      <div className="quiz-hanzi">{word.hanzi}</div>
+      <div className="quiz-hanzi">
+        <span className="hanzi-badge-wrap">
+          {word.hanzi}
+          <span className="hsk-badge">HSK {word.level}</span>
+        </span>
+      </div>
 
       <div className="quiz-choices-row">
         <div className="quiz-choices-col">

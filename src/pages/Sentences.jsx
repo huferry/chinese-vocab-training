@@ -165,7 +165,12 @@ export default function Sentences() {
       {/* Word display */}
       {word && (
         <div className="sentences-word-card">
-          <div className="sentences-hanzi">{word.hanzi}</div>
+          <div className="sentences-hanzi">
+            <span className="hanzi-badge-wrap">
+              {word.hanzi}
+              <span className="hsk-badge">HSK {word.level}</span>
+            </span>
+          </div>
           <div className="sentences-meta">{word.pinyin} · {word.meaning}</div>
         </div>
       )}

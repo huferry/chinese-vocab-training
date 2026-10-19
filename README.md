@@ -72,6 +72,11 @@ CREATE TABLE IF NOT EXISTS dictionary (
 
 ## Release Notes
 
+### v1.4.0 (2026-10-19)
+
+- Dictionary: filter table by Level, Source, and Tags
+- All games: HSK level badge shown next to the Chinese word
+
 ### v1.3.0 (2026-10-19)
 
 - Word tagging: add tags when creating or importing words

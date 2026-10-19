@@ -25,6 +25,10 @@ export default function Dictionary() {
   const [sortKey, setSortKey] = useState('level');
   const [sortDir, setSortDir] = useState('asc');
 
+  const [filterLevels,  setFilterLevels]  = useState([]);
+  const [filterSources, setFilterSources] = useState([]);
+  const [filterTags,    setFilterTags]    = useState([]);
+
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm]             = useState(EMPTY_FORM);
   const [saving, setSaving]         = useState(false);
@@ -169,13 +173,19 @@ export default function Dictionary() {
     else { setSortKey(key); setSortDir('asc'); }
   }
 
+  const allLevels  = useMemo(() => [...new Set(words.map(w => w.level).filter(Boolean))].sort((a, b) => a - b), [words]);
+  const allSources = useMemo(() => [...new Set(words.map(w => w.source).filter(Boolean))].sort(), [words]);
+  const allTags    = useMemo(() => [...new Set(words.flatMap(w => w.tags ?? []))].sort(), [words]);
+
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
-    return words.filter(w => !q ||
-      (w.meaning || '').toLowerCase().includes(q) ||
-      (w.explanation || '').toLowerCase().includes(q)
+    return words.filter(w =>
+      (!q || (w.meaning || '').toLowerCase().includes(q) || (w.explanation || '').toLowerCase().includes(q)) &&
+      (filterLevels.length  === 0 || filterLevels.includes(w.level)) &&
+      (filterSources.length === 0 || filterSources.includes(w.source)) &&
+      (filterTags.length    === 0 || filterTags.some(t => (w.tags ?? []).includes(t)))
     );
-  }, [words, query]);
+  }, [words, query, filterLevels, filterSources, filterTags]);
 
   const sorted = useMemo(() => [...filtered].sort((a, b) => {
     const av = a[sortKey] ?? '', bv = b[sortKey] ?? '';
@@ -189,7 +199,7 @@ export default function Dictionary() {
   return (
     <div className="dictionary-page">
       <div className="page-header-row">
-        <h2>Dictionary <span className="dict-count">({words.length})</span></h2>
+        <h2>Dictionary <span className="dict-count">({filtered.length}{filtered.length !== words.length ? ` / ${words.length}` : ''})</span></h2>
         <div className="dict-header-btns">
           <button className="dict-add-btn" onClick={openImport} title="Import from document or image">
             <svg viewBox="0 0 22 22" fill="currentColor" width="16" height="16" style={{marginRight:'2px',verticalAlign:'middle'}}>
@@ -208,6 +218,57 @@ export default function Dictionary() {
         value={query}
         onChange={e => setQuery(e.target.value)}
       />
+
+      <div className="dict-filter-bar">
+        <div className="dict-filter-group">
+          <span className="dict-filter-label">Level</span>
+          <div className="dict-filter-chips">
+            {allLevels.map(l => (
+              <button
+                key={l}
+                className={`dict-filter-chip${filterLevels.includes(l) ? ' active' : ''}`}
+                onClick={() => setFilterLevels(prev => prev.includes(l) ? prev.filter(x => x !== l) : [...prev, l])}
+              >HSK {l}</button>
+            ))}
+          </div>
+        </div>
+
+        {allSources.length > 0 && (
+          <div className="dict-filter-group">
+            <span className="dict-filter-label">Source</span>
+            <div className="dict-filter-chips">
+              {allSources.map(s => (
+                <button
+                  key={s}
+                  className={`dict-filter-chip${filterSources.includes(s) ? ' active' : ''}`}
+                  onClick={() => setFilterSources(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s])}
+                >{s}</button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {allTags.length > 0 && (
+          <div className="dict-filter-group">
+            <span className="dict-filter-label">Tags</span>
+            <div className="dict-filter-chips">
+              {allTags.map(t => (
+                <button
+                  key={t}
+                  className={`dict-filter-chip${filterTags.includes(t) ? ' active' : ''}`}
+                  onClick={() => setFilterTags(prev => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t])}
+                >{t}</button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {(filterLevels.length > 0 || filterSources.length > 0 || filterTags.length > 0) && (
+          <button className="dict-filter-clear" onClick={() => { setFilterLevels([]); setFilterSources([]); setFilterTags([]); }}>
+            Clear filters
+          </button>
+        )}
+      </div>
 
       <div className="dict-table-wrap">
         <table className="dict-table">
