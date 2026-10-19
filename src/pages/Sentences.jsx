@@ -3,6 +3,7 @@ import WordFilter from '../components/WordFilter.jsx';
 import { sentenceChatTurn } from '../utils/sentenceChat.js';
 import { weightedPick, poolWeights } from '../utils/wordSelection.js';
 import { recordPlay } from '../utils/recordPlay.js';
+import BreakdownPopup from '../components/BreakdownPopup.jsx';
 
 // Render text with **bold** markdown into React elements
 function renderText(text) {
@@ -24,7 +25,8 @@ export default function Sentences() {
   const [loading, setLoading]   = useState(true);
   const [error, setError]       = useState(null);
 
-  const [pool, setPool]           = useState(null); // null = filter screen
+  const [pool, setPool]               = useState(null); // null = filter screen
+  const [breakdownChar, setBreakdownChar] = useState(null);
   const [word, setWord]           = useState(null);
   const [messages, setMessages]   = useState([]);   // [{role, content}]
   const [input, setInput]         = useState('');
@@ -153,7 +155,9 @@ export default function Sentences() {
         <div className="sentences-word-card">
           <div className="sentences-hanzi">
             <span className="hanzi-badge-wrap">
-              {word.hanzi}
+              {[...word.hanzi].map((char, i) => (
+                <span key={i} className="hanzi-char" onClick={() => setBreakdownChar(char)}>{char}</span>
+              ))}
               <span className="hsk-badge">HSK {word.level}</span>
             </span>
           </div>
@@ -217,6 +221,10 @@ export default function Sentences() {
             <button className="quiz-btn" onClick={handleNextRound}>Next sentence</button>
           </div>
         </div>
+      )}
+
+      {breakdownChar && (
+        <BreakdownPopup hanzi={breakdownChar} onClose={() => setBreakdownChar(null)} />
       )}
     </div>
   );

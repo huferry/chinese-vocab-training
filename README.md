@@ -72,6 +72,10 @@ CREATE TABLE IF NOT EXISTS dictionary (
 
 ## Release Notes
 
+### v1.5.0 (2026-10-19)
+
+- Character breakdown: click any character in Flash Card or Sentences to see radical breakdown, etymology, pinyin, and common words (powered by Claude Sonnet, cached in DB)
+
 ### v1.4.2 (2026-10-19)
 
 - Word selection: lower confidence now means more likely to appear (was inverted)

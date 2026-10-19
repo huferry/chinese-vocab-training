@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import WordFilter from '../components/WordFilter.jsx';
 import { weightedPick, poolWeights } from '../utils/wordSelection.js';
 import { recordPlay } from '../utils/recordPlay.js';
+import BreakdownPopup from '../components/BreakdownPopup.jsx';
 
 function pickThree(pool) {
   const weights = poolWeights(pool);
@@ -15,11 +16,12 @@ function pickThree(pool) {
 }
 
 export default function FlashCard() {
-  const [allWords, setAllWords] = useState([]);
-  const [pool, setPool]         = useState(null);
-  const [slots, setSlots]       = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState(null);
+  const [allWords, setAllWords]         = useState([]);
+  const [pool, setPool]                 = useState(null);
+  const [slots, setSlots]               = useState([]);
+  const [loading, setLoading]           = useState(true);
+  const [error, setError]               = useState(null);
+  const [breakdownChar, setBreakdownChar] = useState(null);
 
   useEffect(() => {
     fetch('/api/words')
@@ -78,6 +80,7 @@ export default function FlashCard() {
   if (!pool) return <WordFilter words={allWords} onStart={handleStart} />;
 
   return (
+    <>
     <div className="flashcard-page">
       <div className="page-header-row">
         <h2>Flash Cards</h2>
@@ -104,7 +107,9 @@ export default function FlashCard() {
               </div>
               <div className="card-hanzi">
                 <span className="hanzi-badge-wrap">
-                  {slot.word.hanzi}
+                  {[...slot.word.hanzi].map((char, i) => (
+                    <span key={i} className="hanzi-char" onClick={e => { e.stopPropagation(); setBreakdownChar(char); }}>{char}</span>
+                  ))}
                   <span className="hsk-badge">HSK {slot.word.level}</span>
                 </span>
               </div>
@@ -126,5 +131,10 @@ export default function FlashCard() {
         ))}
       </div>
     </div>
+
+    {breakdownChar && (
+      <BreakdownPopup hanzi={breakdownChar} onClose={() => setBreakdownChar(null)} />
+    )}
+    </>
   );
 }

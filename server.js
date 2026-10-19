@@ -6,6 +6,7 @@ import multer from 'multer';
 import { autofillWord } from './autofill.js';
 import { extractWordsFromFile } from './importWords.js';
 import { sentenceChatTurn } from './sentenceChat.js';
+import { fetchBreakdown } from './breakdown.js';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
@@ -154,6 +155,21 @@ app.patch('/api/words/:id/confidence', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Database error' });
+  }
+});
+
+app.get('/api/breakdown/:hanzi', async (req, res) => {
+  const { hanzi } = req.params;
+  try {
+    const { rows } = await pool.query('SELECT breakdown FROM character_breakdown WHERE hanzi = $1', [hanzi]);
+    if (rows.length) return res.json({ hanzi, breakdown: rows[0].breakdown, cached: true });
+
+    const breakdown = await fetchBreakdown(hanzi);
+    await pool.query('INSERT INTO character_breakdown (hanzi, breakdown) VALUES ($1, $2)', [hanzi, breakdown]);
+    res.json({ hanzi, breakdown, cached: false });
+  } catch (err) {
+    console.error('Breakdown error:', err.message);
+    res.status(500).json({ error: err.message });
   }
 });
 
