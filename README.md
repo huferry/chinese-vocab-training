@@ -72,6 +72,13 @@ CREATE TABLE IF NOT EXISTS dictionary (
 
 ## Release Notes
 
+### v1.3.0 (2026-10-19)
+
+- Word tagging: add tags when creating or importing words
+- Tags filter on the game filter screen
+- Import: upsert tags onto existing words
+- Tags displayed in the Dictionary table
+
 ### v1.2.2 (2026-10-19)
 
 - Track play count per word in the database

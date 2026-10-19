@@ -688,6 +688,64 @@ body {
 
 .wf-back-btn:hover { text-decoration: underline; }
 
+/* ── Tag chips (display) ── */
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--accent-light);
+  border: 1px solid var(--accent);
+  border-radius: 20px;
+  padding: 0.15rem 0.55rem;
+  font-size: 0.78rem;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.tag-chip-remove {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+  padding: 0;
+  margin-left: 0.1rem;
+}
+
+.tag-chip-remove:hover { color: var(--text); }
+
+.tag-chip-sm {
+  font-size: 0.72rem;
+  padding: 0.1rem 0.45rem;
+}
+
+.td-tags { white-space: nowrap; }
+
+/* ── Tag input ── */
+.tag-input-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 38px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.35rem 0.5rem;
+  cursor: text;
+}
+
+.tag-input-field {
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-size: 0.95rem;
+  min-width: 80px;
+  flex: 1;
+}
+
 /* ── Quiz review actions row ── */
 .quiz-review-actions {
   display: flex;

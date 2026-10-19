@@ -29,7 +29,7 @@ const pool = new Pool({
 app.get('/api/words', async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT id, hanzi, pinyin, level, meaning, explanation, source, confidence, play_count FROM dictionary ORDER BY level, hanzi'
+      'SELECT id, hanzi, pinyin, level, meaning, explanation, source, confidence, play_count, tags FROM dictionary ORDER BY level, hanzi'
     );
     res.json(result.rows);
   } catch (err) {
@@ -62,16 +62,17 @@ app.post('/api/autofill', async (req, res) => {
 });
 
 app.post('/api/words', async (req, res) => {
-  const { hanzi, pinyin, level, meaning, explanation, source } = req.body;
+  const { hanzi, pinyin, level, meaning, explanation, source, tags = [] } = req.body;
   if (!hanzi || !pinyin || !level || !meaning || !explanation || !source) {
     return res.status(400).json({ error: 'All fields are required' });
   }
+  const validTags = tags.filter(t => /^[a-z0-9]+$/.test(t));
   try {
     const result = await pool.query(
-      `INSERT INTO dictionary (hanzi, pinyin, level, meaning, explanation, source)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING id, hanzi, pinyin, level, meaning, explanation, source, confidence`,
-      [hanzi, pinyin, parseInt(level), meaning, explanation, source]
+      `INSERT INTO dictionary (hanzi, pinyin, level, meaning, explanation, source, tags)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING id, hanzi, pinyin, level, meaning, explanation, source, confidence, play_count, tags`,
+      [hanzi, pinyin, parseInt(level), meaning, explanation, source, validTags]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -82,6 +83,7 @@ app.post('/api/words', async (req, res) => {
 
 app.post('/api/import', upload.single('file'), async (req, res) => {
   const { source } = req.body;
+  const tags = JSON.parse(req.body.tags || '[]').filter(t => /^[a-z0-9]+$/.test(t));
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
   if (!source)   return res.status(400).json({ error: 'source is required' });
 
@@ -95,13 +97,25 @@ app.post('/api/import', upload.single('file'), async (req, res) => {
     const toAdd   = words.filter(w => !existingSet.has(w.hanzi));
     const skipped = words.filter(w =>  existingSet.has(w.hanzi)).map(w => w.hanzi);
 
+    // Upsert tags for existing words
+    if (tags.length > 0 && skipped.length > 0) {
+      for (const hanzi of skipped) {
+        await pool.query(
+          `UPDATE dictionary
+           SET tags = (SELECT array_agg(DISTINCT t ORDER BY t) FROM unnest(tags || $2::text[]) t)
+           WHERE hanzi = $1`,
+          [hanzi, tags]
+        );
+      }
+    }
+
     const added = [];
     for (const w of toAdd) {
       const { rows } = await pool.query(
-        `INSERT INTO dictionary (hanzi, pinyin, level, meaning, explanation, source)
-         VALUES ($1, $2, $3, $4, $5, $6)
-         RETURNING id, hanzi, pinyin, level, meaning, explanation, source, confidence`,
-        [w.hanzi, w.pinyin, w.level, w.meaning, w.explanation, source]
+        `INSERT INTO dictionary (hanzi, pinyin, level, meaning, explanation, source, tags)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
+         RETURNING id, hanzi, pinyin, level, meaning, explanation, source, confidence, play_count, tags`,
+        [w.hanzi, w.pinyin, w.level, w.meaning, w.explanation, source, tags]
       );
       added.push(rows[0]);
     }

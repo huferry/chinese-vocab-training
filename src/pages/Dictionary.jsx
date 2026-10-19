@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { autofillWord } from '../utils/autofill.js';
 import { importFromFile } from '../utils/importWords.js';
+import TagInput from '../components/TagInput.jsx';
 
 const COLUMNS = [
   { key: 'hanzi',       label: 'Hanzi' },
@@ -9,11 +10,12 @@ const COLUMNS = [
   { key: 'meaning',     label: 'Meaning' },
   { key: 'explanation', label: 'Explanation',  mobileHidden: true },
   { key: 'source',      label: 'Source',       mobileHidden: true },
+  { key: 'tags',        label: 'Tags',         mobileHidden: true, noSort: true },
 ];
 
 const HSK_LEVELS = [1, 2, 3, 4, 5, 6];
 
-const EMPTY_FORM = { hanzi: '', pinyin: '', level: '', meaning: '', explanation: '', source: '' };
+const EMPTY_FORM = { hanzi: '', pinyin: '', level: '', meaning: '', explanation: '', source: '', tags: [] };
 
 export default function Dictionary() {
   const [words, setWords]     = useState([]);
@@ -34,6 +36,7 @@ export default function Dictionary() {
   const [importOpen, setImportOpen]       = useState(false);
   const [importFile, setImportFile]       = useState(null);
   const [importSource, setImportSource]   = useState('');
+  const [importTags, setImportTags]       = useState([]);
   const [importStage, setImportStage]     = useState('form'); // 'form' | 'loading' | 'results'
   const [importResult, setImportResult]   = useState(null);  // { added, skipped }
   const [importError, setImportError]     = useState(null);
@@ -107,7 +110,7 @@ export default function Dictionary() {
   }
 
   async function handleOk() {
-    const { hanzi, pinyin, level, meaning, explanation, source } = form;
+    const { hanzi, pinyin, level, meaning, explanation, source, tags } = form;
     if (!hanzi || !pinyin || !level || !meaning || !explanation || !source) {
       setFormError('All fields are required.');
       return;
@@ -118,7 +121,7 @@ export default function Dictionary() {
       const res = await fetch('/api/words', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ hanzi, pinyin, level, meaning, explanation, source }),
+        body: JSON.stringify({ hanzi, pinyin, level, meaning, explanation, source, tags }),
       });
       if (!res.ok) throw new Error((await res.json()).error ?? 'Save failed');
       const newWord = await res.json();
@@ -134,6 +137,7 @@ export default function Dictionary() {
   function openImport() {
     setImportFile(null);
     setImportSource('');
+    setImportTags([]);
     setImportStage('form');
     setImportResult(null);
     setImportError(null);
@@ -150,7 +154,7 @@ export default function Dictionary() {
     setImportStage('loading');
     setImportError(null);
     try {
-      const result = await importFromFile(importFile, importSource.trim());
+      const result = await importFromFile(importFile, importSource.trim(), importTags);
       setImportResult(result);
       setWords(prev => [...prev, ...result.added]);
       setImportStage('results');
@@ -210,9 +214,14 @@ export default function Dictionary() {
           <thead>
             <tr>
               {COLUMNS.map(col => (
-                <th key={col.key} className={[sortKey === col.key ? 'sorted' : '', col.mobileHidden ? 'mobile-hidden' : ''].filter(Boolean).join(' ')} onClick={() => handleSort(col.key)}>
+                <th
+                  key={col.key}
+                  className={[sortKey === col.key ? 'sorted' : '', col.mobileHidden ? 'mobile-hidden' : ''].filter(Boolean).join(' ')}
+                  onClick={() => !col.noSort && handleSort(col.key)}
+                  style={col.noSort ? { cursor: 'default' } : {}}
+                >
                   {col.label}
-                  <span className="sort-icon">{sortKey === col.key ? (sortDir === 'asc' ? '▲' : '▼') : '⇅'}</span>
+                  {!col.noSort && <span className="sort-icon">{sortKey === col.key ? (sortDir === 'asc' ? '▲' : '▼') : '⇅'}</span>}
                 </th>
               ))}
             </tr>
@@ -228,6 +237,9 @@ export default function Dictionary() {
                 <td>{w.meaning}</td>
                 <td className="mobile-hidden">{w.explanation}</td>
                 <td className="mobile-hidden">{w.source}</td>
+                <td className="mobile-hidden td-tags">
+                  {(w.tags ?? []).map(t => <span key={t} className="tag-chip tag-chip-sm">{t}</span>)}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -290,6 +302,14 @@ export default function Dictionary() {
                   ))}
                 </datalist>
               </label>
+              <label className="dialog-label">
+                Tags
+                <TagInput
+                  value={form.tags}
+                  onChange={tags => setForm(f => ({ ...f, tags }))}
+                  placeholder="Add tags… (Enter or comma)"
+                />
+              </label>
             </div>
 
             {formError && <p className="dialog-error">{formError}</p>}
@@ -335,6 +355,14 @@ export default function Dictionary() {
                         <option key={s} value={s} />
                       ))}
                     </datalist>
+                  </label>
+                  <label className="dialog-label">
+                    Tags
+                    <TagInput
+                      value={importTags}
+                      onChange={setImportTags}
+                      placeholder="Add tags… (Enter or comma)"
+                    />
                   </label>
                 </div>
                 {importError && <p className="dialog-error">{importError}</p>}
