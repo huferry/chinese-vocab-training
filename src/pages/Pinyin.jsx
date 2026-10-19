@@ -6,6 +6,8 @@ import {
   applyTones,
   generateWrongToneSets,
 } from '../utils/pinyinTones.js';
+import { weightedPickN } from '../utils/wordSelection.js';
+import { recordPlay } from '../utils/recordPlay.js';
 
 const QUESTION_COUNT = 10;
 
@@ -59,7 +61,7 @@ function buildQuestion(word, pool) {
 
 function buildSession(pool) {
   const total  = Math.min(QUESTION_COUNT, pool.length);
-  const picked = shuffle(pool).slice(0, total);
+  const picked = weightedPickN(pool, total);
   return picked.map(w => buildQuestion(w, pool));
 }
 
@@ -83,6 +85,10 @@ export default function PinyinGame() {
       .then(data => { setAllWords(data); setLoading(false); })
       .catch(() => { setError('Failed to load words.'); setLoading(false); });
   }, []);
+
+  useEffect(() => {
+    if (questions && questions[index]) recordPlay(questions[index].word.id);
+  }, [questions, index]);
 
   function handleStart(filtered) {
     setActivePool(filtered);

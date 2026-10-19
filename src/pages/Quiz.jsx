@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import WordFilter from '../components/WordFilter.jsx';
+import { weightedPickN } from '../utils/wordSelection.js';
+import { recordPlay } from '../utils/recordPlay.js';
 
 const QUESTION_COUNT = 10;
 
@@ -21,10 +23,8 @@ function buildQuestion(word, pool) {
 
 function buildSession(pool) {
   const total  = Math.min(QUESTION_COUNT, pool.length);
-  const picked = shuffle(pool).slice(0, total);
-  // need at least 4 words for distractors; pad from full pool if needed
-  const distPool = pool.length >= 4 ? pool : pool;
-  return picked.map(w => buildQuestion(w, distPool));
+  const picked = weightedPickN(pool, total);
+  return picked.map(w => buildQuestion(w, pool));
 }
 
 export default function Quiz() {
@@ -48,6 +48,10 @@ export default function Quiz() {
       .then(data => { setAllWords(data); setLoading(false); })
       .catch(() => { setError('Failed to load words.'); setLoading(false); });
   }, []);
+
+  useEffect(() => {
+    if (questions && questions[index]) recordPlay(questions[index].word.id);
+  }, [questions, index]);
 
   function handleStart(filtered) {
     setActivePool(filtered);

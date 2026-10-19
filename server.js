@@ -29,9 +29,20 @@ const pool = new Pool({
 app.get('/api/words', async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT id, hanzi, pinyin, level, meaning, explanation, source, confidence FROM dictionary ORDER BY level, hanzi'
+      'SELECT id, hanzi, pinyin, level, meaning, explanation, source, confidence, play_count FROM dictionary ORDER BY level, hanzi'
     );
     res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
+app.post('/api/words/:id/play', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query('UPDATE dictionary SET play_count = play_count + 1 WHERE id = $1', [id]);
+    res.json({ ok: true });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Database error' });

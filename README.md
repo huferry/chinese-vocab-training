@@ -72,6 +72,12 @@ CREATE TABLE IF NOT EXISTS dictionary (
 
 ## Release Notes
 
+### v1.2.2 (2026-10-19)
+
+- Track play count per word in the database
+- Word selection in all games now factors in play count: less-played words appear more often
+- Quiz and Pinyin games now use weighted selection (previously random shuffle)
+
 ### v1.2.1 (2026-10-17)
 
 - Dictionary import: support .txt and .srt files
