@@ -1184,7 +1184,7 @@ body {
 
 .hsk-badge {
   position: absolute;
-  top: 0.1em;
+  bottom: 0.1em;
   left: calc(100% + 0.3rem);
   font-size: 0.6rem;
   font-weight: 700;

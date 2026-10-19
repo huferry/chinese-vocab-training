@@ -72,6 +72,10 @@ CREATE TABLE IF NOT EXISTS dictionary (
 
 ## Release Notes
 
+### v1.4.1 (2026-10-19)
+
+- Move HSK level badge to bottom-right of the Chinese word
+
 ### v1.4.0 (2026-10-19)
 
 - Dictionary: filter table by Level, Source, and Tags
