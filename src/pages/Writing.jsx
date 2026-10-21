@@ -21,7 +21,9 @@ export default function Writing() {
   const [error, setError]       = useState(null);
 
   const [pool, setPool]             = useState(null);
-  const [story, setStory]           = useState(null);
+  const [story, setStory]           = useState(() => {
+    try { return JSON.parse(localStorage.getItem('writing_last_story') || 'null'); } catch { return null; }
+  });
   const [generating, setGenerating] = useState(false);
   const [genError, setGenError]     = useState(null);
 
@@ -42,6 +44,7 @@ export default function Writing() {
     try {
       const data = await fetchStory(words);
       setStory(data);
+      localStorage.setItem('writing_last_story', JSON.stringify(data));
     } catch (err) {
       setGenError(err.message);
     } finally {
@@ -63,14 +66,14 @@ export default function Writing() {
   if (error)   return <p className="error-msg">Error: {error}</p>;
   if (allWords.length === 0) return <p className="status-msg">No words in the database yet.</p>;
 
-  if (!pool) return <WordFilter words={allWords} onStart={handleStart} />;
+  if (!pool && !story) return <WordFilter words={allWords} onStart={handleStart} />;
 
   return (
     <>
     <div className="writing-page">
       <div className="page-header-row">
         <h2>Writing</h2>
-        <button className="wf-back-btn" onClick={() => { setPool(null); setStory(null); }}>⟵ Change filters</button>
+        <button className="wf-back-btn" onClick={() => { setPool(null); setStory(null); localStorage.removeItem('writing_last_story'); }}>⟵ Change filters</button>
       </div>
 
       {generating && (
@@ -119,7 +122,7 @@ export default function Writing() {
 
       {!generating && (story || genError) && (
         <div className="writing-actions">
-          <button className="btn btn-primary" onClick={handleNext}>Next story</button>
+          <button className="btn btn-primary" onClick={handleNext} disabled={!pool}>Next story</button>
         </div>
       )}
     </div>
