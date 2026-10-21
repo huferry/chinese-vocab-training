@@ -8,8 +8,8 @@ export async function generateStory(words) {
   const wordList  = shuffled.map(w => `${w.hanzi} (${w.pinyin}): ${w.meaning}`).join('\n');
 
   const message = await client.messages.create({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 2048,
+    model: 'claude-sonnet-4-6',
+    max_tokens: 4096,
     messages: [{
       role: 'user',
       content:
@@ -24,9 +24,16 @@ export async function generateStory(words) {
         `  "title_pinyin": "<pinyin with tone marks>",\n` +
         `  "title_translation": "<English translation of title>",\n` +
         `  "sentences": [\n` +
-        `    { "chinese": "...", "pinyin": "...", "translation": "..." }\n` +
+        `    {\n` +
+        `      "chinese": "full sentence including punctuation",\n` +
+        `      "translation": "English translation of the sentence",\n` +
+        `      "words": [\n` +
+        `        { "hanzi": "word", "pinyin": "pīnyīn", "meaning": "English meaning" }\n` +
+        `      ]\n` +
+        `    }\n` +
         `  ]\n` +
         `}\n\n` +
+        `Each sentence's "words" array must contain EVERY Chinese word or character in the sentence — including particles (的, 了, 在, 是, etc.), pronouns, prepositions, and all other words. The only things to exclude are punctuation marks. Every Chinese character in the sentence must belong to exactly one entry in the words array.\n\n` +
         `Vocabulary words:\n${wordList}`,
     }],
   });

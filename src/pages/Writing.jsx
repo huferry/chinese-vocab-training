@@ -15,6 +15,22 @@ async function fetchStory(words) {
   return res.json();
 }
 
+// Build a per-character map to the word it belongs to in the sentence
+function buildCharWordMap(sentence) {
+  const map = new Array([...sentence.chinese].length).fill(null);
+  let searchFrom = 0;
+  for (const word of sentence.words || []) {
+    const idx = sentence.chinese.indexOf(word.hanzi, searchFrom);
+    if (idx !== -1) {
+      for (let i = idx; i < idx + word.hanzi.length; i++) {
+        map[i] = word;
+      }
+      searchFrom = idx + word.hanzi.length;
+    }
+  }
+  return map;
+}
+
 export default function Writing() {
   const [allWords, setAllWords] = useState([]);
   const [loading, setLoading]   = useState(true);
@@ -22,12 +38,17 @@ export default function Writing() {
 
   const [pool, setPool]             = useState(null);
   const [story, setStory]           = useState(() => {
-    try { return JSON.parse(localStorage.getItem('writing_last_story') || 'null'); } catch { return null; }
+    try {
+      const s = JSON.parse(localStorage.getItem('writing_last_story') || 'null');
+      // Discard stories generated before word-level hints were added
+      if (s && !s.sentences?.[0]?.words) { localStorage.removeItem('writing_last_story'); return null; }
+      return s;
+    } catch { return null; }
   });
   const [generating, setGenerating] = useState(false);
   const [genError, setGenError]     = useState(null);
 
-  const [tooltip, setTooltip]           = useState(null); // { pinyin, translation, x, y }
+  const [tooltip, setTooltip]             = useState(null); // { hanzi, pinyin, meaning, x, y }
   const [breakdownChar, setBreakdownChar] = useState(null);
 
   useEffect(() => {
@@ -99,22 +120,25 @@ export default function Writing() {
 
           <div className="writing-sentences">
             <div className="writing-sentence-chinese">
-              {story.sentences.map((s, i) =>
-                [...s.chinese].map((char, j) => (
-                  /[\u4e00-\u9fff\u3400-\u4dbf]/.test(char)
-                    ? (
-                      <span
-                        key={`${i}-${j}`}
-                        className="hanzi-char"
-                        onClick={() => setBreakdownChar(char)}
-                        onMouseEnter={e => setTooltip({ pinyin: s.pinyin, translation: s.translation, x: e.clientX, y: e.clientY })}
-                        onMouseMove={e => setTooltip(t => t ? { ...t, x: e.clientX, y: e.clientY } : null)}
-                        onMouseLeave={() => setTooltip(null)}
-                      >{char}</span>
-                    )
-                    : <span key={`${i}-${j}`}>{char}</span>
-                ))
-              )}
+              {story.sentences.map((s, si) => {
+                const charWordMap = buildCharWordMap(s);
+                return [...s.chinese].map((char, ci) => {
+                  const word = charWordMap[ci];
+                  const isChinese = /[\u4e00-\u9fff\u3400-\u4dbf]/.test(char);
+                  return isChinese ? (
+                    <span
+                      key={`${si}-${ci}`}
+                      className="hanzi-char"
+                      onClick={() => setBreakdownChar(char)}
+                      onMouseEnter={e => word && setTooltip({ hanzi: word.hanzi, pinyin: word.pinyin, meaning: word.meaning, x: e.clientX, y: e.clientY })}
+                      onMouseMove={e => word && setTooltip(t => t ? { ...t, x: e.clientX, y: e.clientY } : null)}
+                      onMouseLeave={() => setTooltip(null)}
+                    >{char}</span>
+                  ) : (
+                    <span key={`${si}-${ci}`}>{char}</span>
+                  );
+                });
+              })}
             </div>
           </div>
         </div>
@@ -132,8 +156,9 @@ export default function Writing() {
         className="writing-tooltip"
         style={{ left: tooltip.x + 12, top: tooltip.y - 10 }}
       >
+        <div className="writing-tooltip-hanzi">{tooltip.hanzi}</div>
         <div className="writing-tooltip-pinyin">{tooltip.pinyin}</div>
-        <div className="writing-tooltip-translation">{tooltip.translation}</div>
+        <div className="writing-tooltip-meaning">{tooltip.meaning}</div>
       </div>
     )}
 

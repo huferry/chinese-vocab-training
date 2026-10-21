@@ -72,6 +72,12 @@ CREATE TABLE IF NOT EXISTS dictionary (
 
 ## Release Notes
 
+### v1.6.1 (2026-10-21)
+
+- Writing: use Claude Sonnet 4.6 for better story quality
+- Writing: hover hints now cover all words including particles and function words
+- Writing: stale cached stories (without word-level hints) are auto-discarded
+
 ### v1.6.0 (2026-10-19)
 
 - New game: Writing — Claude generates a short story from filtered vocabulary; hover any character to see the sentence's pinyin and translation; click any character for radical breakdown
