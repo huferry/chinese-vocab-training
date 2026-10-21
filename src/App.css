@@ -1560,14 +1560,21 @@ body {
   box-shadow: 0 4px 12px rgba(0,0,0,0.4);
 }
 
-.writing-tooltip-pinyin {
-  font-size: 0.9rem;
-  color: var(--accent-hover);
+.writing-tooltip-hanzi {
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1.2;
   margin-bottom: 0.2rem;
 }
 
-.writing-tooltip-translation {
+.writing-tooltip-pinyin {
   font-size: 0.85rem;
+  color: var(--accent-hover);
+  margin-bottom: 0.15rem;
+}
+
+.writing-tooltip-meaning {
+  font-size: 0.82rem;
   color: var(--text-muted);
   font-style: italic;
 }
