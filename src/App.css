@@ -1556,15 +1556,20 @@ body {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 0.5rem 0.75rem;
-  max-width: 320px;
+  max-width: 400px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.4);
 }
 
-.writing-tooltip-hanzi {
-  font-size: 1.3rem;
-  font-weight: 600;
-  line-height: 1.2;
-  margin-bottom: 0.2rem;
+.writing-tooltip-strokes {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 0.35rem;
+}
+
+.writing-tooltip-stroke-gif {
+  width: 80px;
+  height: 80px;
+  border-radius: 6px;
 }
 
 .writing-tooltip-pinyin {

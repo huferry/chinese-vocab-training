@@ -72,6 +72,11 @@ CREATE TABLE IF NOT EXISTS dictionary (
 
 ## Release Notes
 
+### v1.7.0 (2026-10-24)
+
+- Writing: hover hint now shows animated stroke order (from strokeorder.com) for each character in the word
+- Import: minimum HSK level filter — only words at or above the selected level are imported
+
 ### v1.6.1 (2026-10-21)
 
 - Writing: use Claude Sonnet 4.6 for better story quality

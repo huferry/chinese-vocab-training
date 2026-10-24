@@ -156,7 +156,16 @@ export default function Writing() {
         className="writing-tooltip"
         style={{ left: tooltip.x + 12, top: tooltip.y - 10 }}
       >
-        <div className="writing-tooltip-hanzi">{tooltip.hanzi}</div>
+        <div className="writing-tooltip-strokes">
+          {[...tooltip.hanzi].filter(c => /[\u4e00-\u9fff\u3400-\u4dbf]/.test(c)).map(c => (
+            <img
+              key={c}
+              className="writing-tooltip-stroke-gif"
+              src={`https://www.strokeorder.com/assets/bishun/animation/${c.codePointAt(0)}.gif`}
+              alt={c}
+            />
+          ))}
+        </div>
         <div className="writing-tooltip-pinyin">{tooltip.pinyin}</div>
         <div className="writing-tooltip-meaning">{tooltip.meaning}</div>
       </div>
