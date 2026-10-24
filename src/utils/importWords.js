@@ -1,8 +1,9 @@
-export async function importFromFile(file, source, tags = []) {
+export async function importFromFile(file, source, tags = [], minLevel = 1) {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('source', source);
   formData.append('tags', JSON.stringify(tags));
+  formData.append('minLevel', String(minLevel));
 
   const res = await fetch('/api/import', { method: 'POST', body: formData });
   if (!res.ok) {

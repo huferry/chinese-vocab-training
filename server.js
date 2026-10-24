@@ -86,6 +86,7 @@ app.post('/api/words', async (req, res) => {
 app.post('/api/import', upload.single('file'), async (req, res) => {
   const { source } = req.body;
   const tags = JSON.parse(req.body.tags || '[]').filter(t => /^[a-z0-9]+$/.test(t));
+  const minLevel = parseInt(req.body.minLevel || '1', 10) || 1;
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
   if (!source)   return res.status(400).json({ error: 'source is required' });
 
@@ -96,8 +97,9 @@ app.post('/api/import', upload.single('file'), async (req, res) => {
     const { rows: existing } = await pool.query('SELECT hanzi FROM dictionary');
     const existingSet = new Set(existing.map(r => r.hanzi));
 
-    const toAdd   = words.filter(w => !existingSet.has(w.hanzi));
-    const skipped = words.filter(w =>  existingSet.has(w.hanzi)).map(w => w.hanzi);
+    const eligible = words.filter(w => (w.level ?? 0) >= minLevel);
+    const toAdd   = eligible.filter(w => !existingSet.has(w.hanzi));
+    const skipped = eligible.filter(w =>  existingSet.has(w.hanzi)).map(w => w.hanzi);
 
     // Upsert tags for existing words
     if (tags.length > 0 && skipped.length > 0) {

@@ -37,13 +37,14 @@ export default function Dictionary() {
   const dialogRef = useRef(null);
 
   // Import dialog state
-  const [importOpen, setImportOpen]       = useState(false);
-  const [importFile, setImportFile]       = useState(null);
-  const [importSource, setImportSource]   = useState('');
-  const [importTags, setImportTags]       = useState([]);
-  const [importStage, setImportStage]     = useState('form'); // 'form' | 'loading' | 'results'
-  const [importResult, setImportResult]   = useState(null);  // { added, skipped }
-  const [importError, setImportError]     = useState(null);
+  const [importOpen, setImportOpen]         = useState(false);
+  const [importFile, setImportFile]         = useState(null);
+  const [importSource, setImportSource]     = useState('');
+  const [importTags, setImportTags]         = useState([]);
+  const [importMinLevel, setImportMinLevel] = useState(1);
+  const [importStage, setImportStage]       = useState('form'); // 'form' | 'loading' | 'results'
+  const [importResult, setImportResult]     = useState(null);  // { added, skipped }
+  const [importError, setImportError]       = useState(null);
   const importDialogRef = useRef(null);
 
   useEffect(() => {
@@ -142,6 +143,7 @@ export default function Dictionary() {
     setImportFile(null);
     setImportSource('');
     setImportTags([]);
+    setImportMinLevel(1);
     setImportStage('form');
     setImportResult(null);
     setImportError(null);
@@ -158,7 +160,7 @@ export default function Dictionary() {
     setImportStage('loading');
     setImportError(null);
     try {
-      const result = await importFromFile(importFile, importSource.trim(), importTags);
+      const result = await importFromFile(importFile, importSource.trim(), importTags, importMinLevel);
       setImportResult(result);
       setWords(prev => [...prev, ...result.added]);
       setImportStage('results');
@@ -424,6 +426,18 @@ export default function Dictionary() {
                       onChange={setImportTags}
                       placeholder="Add tags… (Enter or comma)"
                     />
+                  </label>
+                  <label className="dialog-label">
+                    Minimum HSK Level
+                    <select
+                      className="dialog-input"
+                      value={importMinLevel}
+                      onChange={e => setImportMinLevel(Number(e.target.value))}
+                    >
+                      {HSK_LEVELS.map(l => (
+                        <option key={l} value={l}>HSK {l} and above</option>
+                      ))}
+                    </select>
                   </label>
                 </div>
                 {importError && <p className="dialog-error">{importError}</p>}
