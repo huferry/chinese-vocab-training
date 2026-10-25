@@ -72,6 +72,12 @@ CREATE TABLE IF NOT EXISTS dictionary (
 
 ## Release Notes
 
+### v1.7.1 (2026-10-25)
+
+- Flash Card: removed Hide button — revealed cards stay open; "Close all" button below cards rates revealed cards as confident, unrevealed as not confident
+- Writing: story sentences simplified to A2–B1 level
+- Writing: fixed JSON parse error when Claude prepends text before the JSON object
+
 ### v1.7.0 (2026-10-24)
 
 - Writing: hover hint now shows animated stroke order (from strokeorder.com) for each character in the word

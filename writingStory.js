@@ -15,7 +15,8 @@ export async function generateStory(words) {
       content:
         `You are a Chinese language teacher. Create a short story in Mandarin Chinese ` +
         `using as many of the provided vocabulary words as possible.\n\n` +
-        `The story should be 6–10 sentences, have a title, and suit B1–B2 learners.\n` +
+        `The story should be 6–10 sentences, have a title, and suit A2–B1 learners.\n` +
+        `Keep sentences short and simple: one idea per sentence, basic grammar structures, no complex subordinate clauses.\n` +
         `IMPORTANT: Do NOT use straight quotation marks (" or ') anywhere in the Chinese or pinyin text. ` +
         `Use Chinese quotation marks 「」 for dialogue instead.\n\n` +
         `Return ONLY a valid JSON object — no markdown, no extra text:\n` +
@@ -38,7 +39,12 @@ export async function generateStory(words) {
     }],
   });
 
-  const raw  = message.content[0].text.trim().replace(/^```[a-z]*\n?/i, '').replace(/```$/, '').trim();
+  const text = message.content[0].text;
+  // Extract the JSON object regardless of any preamble or markdown fences
+  const start = text.indexOf('{');
+  const end   = text.lastIndexOf('}');
+  if (start === -1 || end === -1) throw new Error('No JSON object found in AI response');
+  const raw = text.slice(start, end + 1);
   let data;
   try {
     data = JSON.parse(raw);

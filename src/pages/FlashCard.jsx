@@ -69,8 +69,22 @@ export default function FlashCard() {
     }, 300);
   }
 
-  function toggleReveal(i) {
-    setSlots(prev => prev.map((s, idx) => idx === i ? { ...s, revealed: !s.revealed } : s));
+  function reveal(i) {
+    setSlots(prev => prev.map((s, idx) => idx === i ? { ...s, revealed: true } : s));
+  }
+
+  function closeAll() {
+    slots.filter(s => !s.gone).forEach(s => {
+      fetch(`/api/words/${s.word.id}/confidence`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ confident: s.revealed }),
+      })
+        .then(r => r.json())
+        .then(({ confidence }) => updatePoolConfidence(s.word.id, confidence))
+        .catch(() => {});
+    });
+    setSlots(pickThree(pool));
   }
 
   if (loading) return <p className="status-msg">Loading words…</p>;
@@ -120,15 +134,15 @@ export default function FlashCard() {
                   {slot.word.explanation && <div className="card-explanation">{slot.word.explanation}</div>}
                 </div>
               )}
-              <button
-                className={`btn btn-sm ${slot.revealed ? 'btn-secondary' : 'btn-primary'}`}
-                onClick={() => toggleReveal(i)}
-              >
-                {slot.revealed ? 'Hide' : 'Show'}
-              </button>
+              {!slot.revealed && (
+                <button className="btn btn-sm btn-primary" onClick={() => reveal(i)}>Show</button>
+              )}
             </div>
           )
         ))}
+      </div>
+      <div className="flashcard-actions">
+        <button className="btn btn-secondary" onClick={closeAll}>Close all</button>
       </div>
     </div>
 
