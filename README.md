@@ -72,6 +72,10 @@ CREATE TABLE IF NOT EXISTS dictionary (
 
 ## Release Notes
 
+### v1.7.2 (2026-10-26)
+
+- App version shown in footer on all pages
+
 ### v1.7.1 (2026-10-25)
 
 - Flash Card: removed Hide button — revealed cards stay open; "Close all" button below cards rates revealed cards as confident, unrevealed as not confident

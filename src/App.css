@@ -148,6 +148,15 @@ body {
   }
 }
 
+/* Footer */
+.app-footer {
+  text-align: center;
+  padding: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+}
+
 /* Main content */
 .main-content {
   flex: 1;

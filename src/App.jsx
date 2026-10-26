@@ -24,6 +24,7 @@ export default function App() {
             <Route path="/dictionary" element={<Dictionary />} />
           </Routes>
         </main>
+        <footer className="app-footer">v{__APP_VERSION__}</footer>
       </div>
     </BrowserRouter>
   );
