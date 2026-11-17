@@ -5,9 +5,14 @@ import { readFileSync } from 'fs';
 const { version } = JSON.parse(readFileSync('./package.json', 'utf-8'));
 
 export default defineConfig({
+  root: 'src/frontend',
   plugins: [react()],
   define: {
     __APP_VERSION__: JSON.stringify(version),
+  },
+  build: {
+    outDir: '../../dist',
+    emptyOutDir: true,
   },
   server: {
     proxy: {

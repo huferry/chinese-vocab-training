@@ -5,9 +5,9 @@
   "main": "firebase/function.js",
   "scripts": {
     "dev": "vite",
-    "start": "node server.js",
+    "start": "node src/backend/server.js",
     "build": "vite build",
-    "deploy-firebase": "npm run build && firebase deploy --config firebase/firebase.json"
+    "deploy-firebase": "npm run build && firebase deploy"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.135.0",

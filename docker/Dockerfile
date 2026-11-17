@@ -18,10 +18,10 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 
 COPY --from=builder /app/dist ./dist
-COPY server.js autofill.js importWords.js sentenceChat.js breakdown.js writingStory.js aiClient.js aiLimiter.js function.js ./
+COPY src/backend/ ./src/backend/
 
 EXPOSE 3001
 
 ENV NODE_ENV=production
 
-CMD ["node", "server.js"]
+CMD ["node", "src/backend/server.js"]
