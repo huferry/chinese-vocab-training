@@ -22,10 +22,11 @@ const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 20 
 
 const pool = new Pool({
   host: process.env.DB_HOST,
-  port: parseInt(process.env.DB_PORT),
+  port: parseInt(process.env.DB_PORT) || 5432,
   database: process.env.DB_NAME,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
+  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
 });
 
 app.get('/api/words', async (req, res) => {
@@ -214,8 +215,7 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-const PORT = 3001;
-app.listen(PORT, async () => {
+export async function ensureSchema() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS stories (
       id         SERIAL PRIMARY KEY,
@@ -226,5 +226,14 @@ app.listen(PORT, async () => {
       created_at TIMESTAMPTZ NOT NULL DEFAULT now()
     )
   `);
-  console.log(`Server running on port ${PORT}`);
-});
+}
+
+export { app };
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const PORT = 3001;
+  app.listen(PORT, async () => {
+    await ensureSchema();
+    console.log(`Server running on port ${PORT}`);
+  });
+}

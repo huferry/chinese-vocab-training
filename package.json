@@ -2,16 +2,19 @@
   "name": "chinese-vocabulary-training",
   "version": "1.7.2",
   "type": "module",
+  "main": "function.js",
   "scripts": {
     "dev": "vite",
     "start": "node server.js",
-    "build": "vite build"
+    "build": "vite build",
+    "deploy-firebase": "npm run build && firebase deploy"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.135.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "firebase-functions": "^7.4.0",
     "multer": "^2.4.0",
     "pg": "^8.12.0",
     "react": "^18.3.1",
