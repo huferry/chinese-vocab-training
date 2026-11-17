@@ -1,6 +1,6 @@
 {
   "name": "chinese-vocabulary-training",
-  "version": "1.8.2",
+  "version": "1.8.3",
   "type": "module",
   "main": "firebase/function.js",
   "scripts": {
