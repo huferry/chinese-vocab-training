@@ -133,6 +133,14 @@ body {
     display: none;
   }
 
+  .banner-title {
+    display: none;
+  }
+
+  .banner-demo-badge {
+    display: none;
+  }
+
   .banner-hamburger {
     display: block;
   }
