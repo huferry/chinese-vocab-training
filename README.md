@@ -76,6 +76,10 @@ CREATE TABLE IF NOT EXISTS dictionary (
 
 ## Release Notes
 
+### v1.8.2 (2026-11-17)
+
+- Mobile: hide banner title and demo badge on small screens so the hamburger menu is always visible
+
 ### v1.8.1 (2026-11-17)
 
 - Reorganised project structure: frontend → `src/frontend`, backend → `src/backend`, Docker files → `docker/`
