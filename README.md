@@ -76,6 +76,12 @@ CREATE TABLE IF NOT EXISTS dictionary (
 
 ## Release Notes
 
+### v1.8.1 (2026-11-17)
+
+- Reorganised project structure: frontend → `src/frontend`, backend → `src/backend`, Docker files → `docker/`
+- Firebase config files (`firebase.json`, `.firebaserc`, `function.js`) moved into `firebase/` subfolder
+- Demo QR code added to README
+
 ### v1.8.0 (2026-11-17)
 
 - Firebase Hosting + Cloud Functions deployment via `npm run deploy-firebase`
