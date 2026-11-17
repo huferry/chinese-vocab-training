@@ -1,10 +1,10 @@
 # Chinese Vocabulary Training
 
-A web app to study Chinese characters and vocabulary using flash cards and quizzes. Words are stored in a PostgreSQL database with HSK levels, pinyin, meanings, and explanations.
-
-**Demo:** https://chinese-vocabulary-train-1a187.web.app
+**Demo:** https://chinese-vocabulary-train-1a187.web.app — demo mode, 10 AI calls per hour
 
 ![Demo QR Code](assets/demo-qr.png)
+
+A web app to study Chinese characters and vocabulary using flash cards and quizzes. Words are stored in a PostgreSQL database with HSK levels, pinyin, meanings, and explanations.
 
 ## Prerequisites
 
