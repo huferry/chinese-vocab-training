@@ -18,7 +18,7 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 
 COPY --from=builder /app/dist ./dist
-COPY server.js autofill.js importWords.js sentenceChat.js breakdown.js writingStory.js ./
+COPY server.js autofill.js importWords.js sentenceChat.js breakdown.js writingStory.js aiClient.js aiLimiter.js function.js ./
 
 EXPOSE 3001
 

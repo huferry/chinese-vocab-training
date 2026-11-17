@@ -1,6 +1,6 @@
-import Anthropic from '@anthropic-ai/sdk';
+import { createClient } from './aiClient.js';
 
-const client = new Anthropic({ apiKey: process.env.CLAUDE_API_KEY });
+const client = createClient();
 
 const EXTRACT_PROMPT = `You are a Chinese language expert. Extract Chinese vocabulary words or phrases from the provided content that are HSK level 3 or higher (levels 3, 4, 5, or 6).
 

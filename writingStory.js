@@ -1,6 +1,6 @@
-import Anthropic from '@anthropic-ai/sdk';
+import { createClient } from './aiClient.js';
 
-const client = new Anthropic({ apiKey: process.env.CLAUDE_API_KEY });
+const client = createClient();
 
 export async function generateStory(words) {
   // Use up to 50 words; shuffle so repeated clicks yield varied stories

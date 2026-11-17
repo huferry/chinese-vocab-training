@@ -8,6 +8,7 @@ import { extractWordsFromFile } from './importWords.js';
 import { sentenceChatTurn } from './sentenceChat.js';
 import { fetchBreakdown } from './breakdown.js';
 import { generateStory } from './writingStory.js';
+import { isDemo, getRemainingCalls } from './aiLimiter.js';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
@@ -27,6 +28,14 @@ const pool = new Pool({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
+});
+
+app.get('/api/mode', (req, res) => {
+  if (isDemo()) {
+    res.json({ mode: 'demo', remainingCalls: getRemainingCalls() });
+  } else {
+    res.json({ mode: 'normal' });
+  }
 });
 
 app.get('/api/words', async (req, res) => {
@@ -60,7 +69,7 @@ app.post('/api/autofill', async (req, res) => {
     res.json(result);
   } catch (err) {
     console.error('Autofill error:', err.message);
-    res.status(500).json({ error: 'Failed to autofill word' });
+    res.status(err.status || 500).json({ error: err.message || 'Failed to autofill word' });
   }
 });
 
@@ -128,7 +137,7 @@ app.post('/api/import', upload.single('file'), async (req, res) => {
     res.json({ added, skipped });
   } catch (err) {
     console.error('Import error:', err.message);
-    res.status(500).json({ error: err.message || 'Import failed' });
+    res.status(err.status || 500).json({ error: err.message || 'Import failed' });
   }
 });
 
@@ -173,7 +182,7 @@ app.get('/api/breakdown/:hanzi', async (req, res) => {
     res.json({ hanzi, breakdown, cached: false });
   } catch (err) {
     console.error('Breakdown error:', err.message);
-    res.status(500).json({ error: err.message });
+    res.status(err.status || 500).json({ error: err.message });
   }
 });
 
@@ -192,7 +201,7 @@ app.post('/api/writing/story', async (req, res) => {
     res.json(story);
   } catch (err) {
     console.error('Writing story error:', err.message);
-    res.status(500).json({ error: err.message });
+    res.status(err.status || 500).json({ error: err.message });
   }
 });
 
@@ -204,7 +213,7 @@ app.post('/api/sentences/chat', async (req, res) => {
     res.json(result);
   } catch (err) {
     console.error('Sentence chat error:', err.message);
-    res.status(500).json({ error: err.message });
+    res.status(err.status || 500).json({ error: err.message });
   }
 });
 

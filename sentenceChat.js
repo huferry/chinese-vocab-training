@@ -1,6 +1,6 @@
-import Anthropic from '@anthropic-ai/sdk';
+import { createClient } from './aiClient.js';
 
-const client = new Anthropic({ apiKey: process.env.CLAUDE_API_KEY });
+const client = createClient();
 
 const SYSTEM_PROMPT = `You are a friendly Chinese language tutor helping a student practice translating sentences.
 

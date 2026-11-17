@@ -2,6 +2,8 @@
 
 A web app to study Chinese characters and vocabulary using flash cards and quizzes. Words are stored in a PostgreSQL database with HSK levels, pinyin, meanings, and explanations.
 
+**Demo:** https://chinese-vocabulary-train-1a187.web.app
+
 ## Prerequisites
 
 - Docker & Docker Compose
@@ -71,6 +73,13 @@ CREATE TABLE IF NOT EXISTS dictionary (
 ```
 
 ## Release Notes
+
+### v1.8.0 (2026-11-17)
+
+- Firebase Hosting + Cloud Functions deployment via `npm run deploy-firebase`
+- Neon serverless Postgres as the production database (Singapore region)
+- Demo mode: set `APP_MODE=demo` and `DEMO_HOURLY_CALL_LIMIT=10` to cap AI calls per hour; demo badge with remaining calls shown in the header
+- SSL database connection support via `DB_SSL=true`
 
 ### v1.7.2 (2026-10-26)
 

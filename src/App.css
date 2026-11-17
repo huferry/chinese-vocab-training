@@ -81,6 +81,18 @@ body {
   white-space: nowrap;
 }
 
+.banner-demo-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: #7c3aed33;
+  color: #a78bfa;
+  border: 1px solid #7c3aed66;
+  border-radius: 999px;
+  padding: 2px 10px;
+  margin-left: 10px;
+  white-space: nowrap;
+}
+
 .banner-hamburger {
   background: none;
   border: none;
