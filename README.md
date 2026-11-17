@@ -4,6 +4,8 @@ A web app to study Chinese characters and vocabulary using flash cards and quizz
 
 **Demo:** https://chinese-vocabulary-train-1a187.web.app
 
+![Demo QR Code](assets/demo-qr.png)
+
 ## Prerequisites
 
 - Docker & Docker Compose
