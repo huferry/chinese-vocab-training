@@ -1,5 +1,5 @@
 import { onRequest } from 'firebase-functions/v2/https';
-import { app, ensureSchema } from './server.js';
+import { app, ensureSchema } from '../server.js';
 
 await ensureSchema();
 

@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "dist",
+    "public": "../dist",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       { "source": "/api/**", "function": "api", "region": "asia-southeast1" }
@@ -8,7 +8,7 @@
   },
   "functions": [
     {
-      "source": ".",
+      "source": "..",
       "codebase": "default",
       "runtime": "nodejs22",
       "ignore": [
@@ -18,7 +18,8 @@
         "src",
         "index.html",
         "vite.config.js",
-        "firebase",
+        "firebase/setup.md",
+        "firebase/*.json",
         "*.md"
       ]
     }
