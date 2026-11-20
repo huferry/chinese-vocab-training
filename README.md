@@ -76,6 +76,11 @@ CREATE TABLE IF NOT EXISTS dictionary (
 
 ## Release Notes
 
+### v1.8.4 (2026-11-20)
+
+- Quiz and Pinyin: clicking a character after submitting opens the character breakdown popup (same as Flash Card)
+- Security: removed leaked Neon credentials from git history
+
 ### v1.8.3 (2026-11-17)
 
 - Import words: switched AI model from Haiku to Sonnet for improved accuracy

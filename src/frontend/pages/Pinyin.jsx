@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import WordFilter from '../components/WordFilter.jsx';
+import BreakdownPopup from '../components/BreakdownPopup.jsx';
 import {
   stripTones,
   extractTones,
@@ -78,6 +79,7 @@ export default function PinyinGame() {
   const [submitted, setSubmitted]     = useState(false);
   const [results, setResults]         = useState([]);
   const [done, setDone]               = useState(false);
+  const [breakdownChar, setBreakdownChar] = useState(null);
 
   useEffect(() => {
     fetch('/api/words')
@@ -182,6 +184,7 @@ export default function PinyinGame() {
   const toneOptions  = selectedSound ? toneOptionsMap[selectedSound] : null;
 
   return (
+    <>
     <div className="quiz-page">
       <div className="page-header-row">
         <div className="quiz-progress">Question {index + 1} / {questions.length}</div>
@@ -190,7 +193,12 @@ export default function PinyinGame() {
 
       <div className="quiz-hanzi">
         <span className="hanzi-badge-wrap">
-          {word.hanzi}
+          {submitted
+            ? [...word.hanzi].map((char, i) => (
+                <span key={i} className="hanzi-char" onClick={e => { e.stopPropagation(); setBreakdownChar(char); }}>{char}</span>
+              ))
+            : word.hanzi
+          }
           <span className="hsk-badge">HSK {word.level}</span>
         </span>
       </div>
@@ -269,5 +277,9 @@ export default function PinyinGame() {
         )}
       </div>
     </div>
+    {breakdownChar && (
+      <BreakdownPopup hanzi={breakdownChar} onClose={() => setBreakdownChar(null)} />
+    )}
+    </>
   );
 }
