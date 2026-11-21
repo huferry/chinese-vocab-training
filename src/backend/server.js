@@ -206,10 +206,10 @@ app.post('/api/writing/story', async (req, res) => {
 });
 
 app.post('/api/sentences/chat', async (req, res) => {
-  const { word, messages } = req.body;
+  const { word, messages, usedSentences } = req.body;
   if (!word?.hanzi) return res.status(400).json({ error: 'word is required' });
   try {
-    const result = await sentenceChatTurn(word, messages ?? []);
+    const result = await sentenceChatTurn(word, messages ?? [], usedSentences ?? []);
     res.json(result);
   } catch (err) {
     console.error('Sentence chat error:', err.message);

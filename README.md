@@ -76,6 +76,10 @@ CREATE TABLE IF NOT EXISTS dictionary (
 
 ## Release Notes
 
+### v1.8.5 (2026-11-21)
+
+- Sentences: track used sentences per word within a session to avoid repetition
+
 ### v1.8.4 (2026-11-20)
 
 - Quiz and Pinyin: clicking a character after submitting opens the character breakdown popup (same as Flash Card)

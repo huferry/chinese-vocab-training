@@ -1,15 +1,16 @@
 /**
  * Send one chat turn to the sentences API.
  *
- * @param {object} word     - { id, hanzi, pinyin, meaning }
- * @param {Array}  messages - [{role, content}] conversation so far (without the current turn)
+ * @param {object} word          - { id, hanzi, pinyin, meaning }
+ * @param {Array}  messages      - [{role, content}] conversation so far (without the current turn)
+ * @param {Array}  usedSentences - English sentences already used for this word in prior rounds
  * @returns {{ content: string, status: 'correct'|'giveup'|null }}
  */
-export async function sentenceChatTurn(word, messages) {
+export async function sentenceChatTurn(word, messages, usedSentences = []) {
   const res = await fetch('/api/sentences/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ word, messages }),
+    body: JSON.stringify({ word, messages, usedSentences }),
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));

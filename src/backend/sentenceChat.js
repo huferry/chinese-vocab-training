@@ -22,16 +22,21 @@ Rules:
 /**
  * Send one chat turn to Claude and return { content, status }.
  *
- * @param {object} word        - { hanzi, pinyin, meaning }
- * @param {Array}  messages    - [{role:'user'|'assistant', content:string}, ...]
- *                               Empty array = start of a new round (Claude speaks first).
+ * @param {object} word          - { hanzi, pinyin, meaning }
+ * @param {Array}  messages      - [{role:'user'|'assistant', content:string}, ...]
+ *                                 Empty array = start of a new round (Claude speaks first).
+ * @param {Array}  usedSentences - English sentences already used for this word in prior rounds.
  * @returns {{ content: string, status: 'correct'|'giveup'|null }}
  */
-export async function sentenceChatTurn(word, messages) {
+export async function sentenceChatTurn(word, messages, usedSentences = []) {
   // The initial context is injected as the first user message so Claude knows the word.
+  const avoidClause = usedSentences.length > 0
+    ? `\n\nSentences already used for this word — do NOT repeat or paraphrase these:\n${usedSentences.map((s, i) => `${i + 1}. ${s}`).join('\n')}`
+    : '';
+
   const contextMsg = {
     role: 'user',
-    content: `Focus word for this round:\n- Chinese: ${word.hanzi} (${word.pinyin})\n- English meaning: "${word.meaning}"\n\nPlease start the exercise.`,
+    content: `Focus word for this round:\n- Chinese: ${word.hanzi} (${word.pinyin})\n- English meaning: "${word.meaning}"${avoidClause}\n\nPlease start the exercise.`,
   };
 
   // Build the full message list Claude will see.

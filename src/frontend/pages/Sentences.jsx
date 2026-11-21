@@ -28,6 +28,7 @@ export default function Sentences() {
   const [pool, setPool]               = useState(null); // null = filter screen
   const [breakdownChar, setBreakdownChar] = useState(null);
   const [word, setWord]           = useState(null);
+  const [usedSentences, setUsedSentences] = useState({}); // { [wordId]: [sentence, ...] }
   const [messages, setMessages]   = useState([]);   // [{role, content}]
   const [input, setInput]         = useState('');
   const [lastSent, setLastSent]   = useState('');
@@ -57,7 +58,13 @@ export default function Sentences() {
     setInput('');
     setSending(true);
     try {
-      const { content, status } = await sentenceChatTurn(selectedWord, []);
+      const prior = usedSentences[selectedWord.id] || [];
+      const { content, status } = await sentenceChatTurn(selectedWord, [], prior);
+      // Record this sentence so future rounds for the same word avoid it
+      setUsedSentences(prev => ({
+        ...prev,
+        [selectedWord.id]: [...(prev[selectedWord.id] || []), content],
+      }));
       const firstMsg = { role: 'assistant', content };
       setMessages([firstMsg]);
       if (status) finishRound(status, selectedWord, [firstMsg]);
